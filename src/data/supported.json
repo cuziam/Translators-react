@@ -1,0 +1,15 @@
+{
+  "deepLSupportedLangs": {
+    "srcLang": [],
+    "targetLang": []
+  },
+  "googleSupportedLangs": {
+    "srcLang": [],
+    "targetLang": []
+  },
+  "papagoSupportedLangs": {
+    "srcLang": [],
+    "targetLang": []
+  },
+  "supportedTools": []
+}
