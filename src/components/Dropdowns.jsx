@@ -1,8 +1,11 @@
-import react from "React";
+import React from "react";
+import Dropdown from "./Dropdown";
+import supported from "../data/supported.json";
 
 function Dropdowns() {
-  const toolList = [];
-  const languageList = [];
+  console.log(supported);
+  const toolList = supported.supportedTools.sort();
+  const languageList = supported.deepLSupportedLangs.targetLangs.sort();
   return (
     <>
       <Dropdown optionsName="Tools" options={toolList} />
@@ -10,3 +13,5 @@ function Dropdowns() {
     </>
   );
 }
+
+export default Dropdowns;

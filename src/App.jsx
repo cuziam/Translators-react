@@ -1,10 +1,15 @@
 import React from "react";
 
-//user defined components
-import Dropdown from "./components/Dropdown";
-
+//user-defined components
+import Dropdowns from "./components/Dropdowns";
+import Toggle from "./components/Toggle";
 function App() {
-  return <Dropdown optionsName="Languages " options={["korean", "japanese"]} />;
+  return (
+    <>
+      <Dropdowns />
+      <Toggle />
+    </>
+  );
 }
 
 export default App;
