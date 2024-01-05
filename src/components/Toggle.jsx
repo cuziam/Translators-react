@@ -1,24 +1,30 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Switch } from "@headlessui/react";
+import { PowerContext } from "./Context";
 
 function Toggle() {
-  const [enabled, setEnabled] = useState(false);
+  const isPowerOn = useContext(PowerContext);
+  const [enabled, setEnabled] = useState(isPowerOn);
 
   return (
-    <Switch
-      checked={enabled}
-      onChange={setEnabled}
-      className={`${
-        enabled ? "bg-primary" : "bg-gray-200"
-      } relative inline-flex h-6 w-11 items-center rounded-full`}
-    >
-      <span className="sr-only">Enable notifications</span>
-      <span
+    <div className={"w-9 h-9 flex justify-center items-center"}>
+      <Switch
+        checked={enabled}
+        onChange={setEnabled}
         className={`${
-          enabled ? "translate-x-6" : "translate-x-1"
-        } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-      />
-    </Switch>
+          enabled
+            ? "bg-primary  hover:bg-dangerGray"
+            : "bg-danger hover:bg-primaryGray"
+        } relative inline-flex h-4 w-9 items-center rounded-full`}
+      >
+        <span className="sr-only">Enable notifications</span>
+        <span
+          className={`${
+            enabled ? "translate-x-5" : "translate-x-1"
+          } inline-block h-3 w-3 transform rounded-full bg-white transition`}
+        />
+      </Switch>
+    </div>
   );
 }
 export default Toggle;

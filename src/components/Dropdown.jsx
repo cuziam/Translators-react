@@ -19,13 +19,15 @@ function Dropdown({ optionsName, options }) {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-transparent hover:bg-background">
+        <Menu.Button className="h-9 px-3 py-2 bg-white bg-opacity-5 rounded-md justify-start items-center gap-2 inline-flex hover:bg-primaryGray">
           {/*this is the name of the dropdown*/}
-          {clicked}
-          <ChevronDownIcon
-            className="-mr-1 h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
+          <div className="justify-start items-center gap-2 flex">
+            {clicked}
+            <ChevronDownIcon
+              className="-mr-1 h-5 w-5 text-icon"
+              aria-hidden="true"
+            />
+          </div>
         </Menu.Button>
       </div>
 
@@ -47,7 +49,7 @@ function Dropdown({ optionsName, options }) {
                     <a
                       className={classNames(
                         option === clicked
-                          ? "bg-blue-100 text-gray-900"
+                          ? "bg-primaryGray text-gray-900"
                           : "text-gray-700", // 선택된 아이템에 대한 스타일
                         active ? "bg-gray-100" : "", // 마우스 오버 시 스타일
                         "block px-4 py-2 text-sm"
