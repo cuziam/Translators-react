@@ -4,12 +4,12 @@ import supported from "../data/supported.json"; //수정 필요: db에서 받아
 
 function Dropdowns() {
   console.log(supported);
-  const toolList = supported.supportedTools.sort();
-  const languageList = supported.deepLSupportedLangs.targetLangs.sort();
+  const tools = supported.supportedTools.sort();
+  const targetLanguages = supported.deepLSupportedLangs.targetLangs.sort();
   return (
-    <div className="Dropdowns h-9 justify-start items-center inline-flex">
-      <Dropdown optionsName="Tools" options={toolList} />
-      <Dropdown optionsName="Languages" options={languageList} />
+    <div className="Dropdowns w-[260px] h-9 justify-start items-center inline-flex overflow-x-visible text-ellipsis">
+      <Dropdown optionsName="tools" options={tools} />
+      <Dropdown optionsName="targetLanguages" options={targetLanguages} />
     </div>
   );
 }

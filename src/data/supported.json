@@ -317,5 +317,6 @@
       ["Chinese (Traditional)", "Chinese (Simplified)"]
     ]
   },
-  "supportedTools": ["DeepL", "Google Translator", "Papago"]
+
+  "supportedTools": ["DeepL", "Google", "Papago"]
 }

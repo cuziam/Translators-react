@@ -21,12 +21,11 @@ function Dropdown({ optionsName, options }) {
       <div>
         <Menu.Button className="h-9 px-3 py-2 bg-white bg-opacity-5 rounded-md justify-start items-center gap-2 inline-flex hover:bg-primaryGray">
           {/*this is the name of the dropdown*/}
-          <div className="justify-start items-center gap-2 flex">
-            {clicked}
-            <ChevronDownIcon
-              className="-mr-1 h-5 w-5 text-icon"
-              aria-hidden="true"
-            />
+          <div className="justify-start items-center gap-2 inline-flex">
+            <div className="h-5 text-text text-sm font-bold font-sans whitespace-nowrap">
+              {clicked}
+            </div>
+            <ChevronDownIcon className="h-5 w-5 text-icon" aria-hidden="true" />
           </div>
         </Menu.Button>
       </div>

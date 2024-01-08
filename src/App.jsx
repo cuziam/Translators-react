@@ -1,15 +1,15 @@
 import React from "react";
 
 //user-defined components
-import Dropdowns from "./components/Dropdowns";
-import Toggle from "./components/Toggle";
-import TranslateResult from "./components/TranslateResult";
+import TranslateResults from "./components/TranslateResults";
+import TranslateSource from "./components/TranslateSource";
 function App() {
   return (
     <>
-      <Dropdowns />
-      <Toggle />
-      <TranslateResult isPowerOn={false} />
+      <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex">
+        <TranslateSource />
+        <TranslateResults />
+      </div>
     </>
   );
 }
