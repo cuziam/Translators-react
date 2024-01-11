@@ -3,10 +3,10 @@ import Toggle from "./Toggle";
 //user-defined components
 import { useContext } from "react";
 import Dropdowns from "./Dropdowns";
-import { resultContext } from "./Context";
+import { ResultContext } from "./Context";
 
 function TargetBar() {
-  const { isPower } = useContext(resultContext).resultConfig;
+  const { isPower } = useContext(ResultContext).resultConfig;
   console.log(isPower);
   let className;
 

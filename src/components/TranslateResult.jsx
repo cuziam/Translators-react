@@ -1,37 +1,34 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 
 //user-defined components
 import TargetBar from "./TargetBar";
 import TargetEditarea from "./TargetEditarea";
 import TargetToolbar from "./TargetToolbar";
-import { resultContext } from "./Context";
+import { ResultContext, ResultsContext } from "./Context";
 import propTypes from "prop-types";
 
-//data
-import supported from "../data/supported.json"; //수정 필요: db에서 받아오거나, 코드 내에서 처리할 것
-
-function TranslateResult({ isPowerOn }) {
-  //define initial state
-  const initialResultConfig = {
-    isPower: isPowerOn,
-    targetLang: "Korean",
-    targetTool: "Papago",
-    targetText: "",
-    supportedTools: supported.supportedTools.sort(),
-    supportedLangs: supported.deepLSupportedLangs.srcLangs.sort(),
-    isLoading: false,
-  };
+function TranslateResult({ index }) {
+  const { resultsConfig, updateResultsConfig } = useContext(ResultsContext);
 
   //define state for TranslateResult
-  const [resultConfig, setResultConfig] = useState(initialResultConfig);
+  const [resultConfig, setResultConfig] = useState(resultsConfig[index]);
+
+  //define functions for TranslateResult
+  //update resultConfig
   const updateResultConfig = (key, value) => {
     console.log("update result config...");
-    setResultConfig({ ...resultConfig, [key]: value });
+    console.log("key: ", key, "value: ", value);
+    setResultConfig((currentConfig) => ({ ...currentConfig, [key]: value }));
   };
+
+  //update resultsConfig
+  useEffect(() => {
+    updateResultsConfig(index, resultConfig);
+  }, [resultConfig, index, updateResultsConfig]);
 
   //render
   return resultConfig.isPower === true ? (
-    <resultContext.Provider
+    <ResultContext.Provider
       value={{
         resultConfig: resultConfig,
         updateResultConfig: updateResultConfig,
@@ -42,23 +39,22 @@ function TranslateResult({ isPowerOn }) {
         <TargetEditarea />
         <TargetToolbar />
       </div>
-    </resultContext.Provider>
+    </ResultContext.Provider>
   ) : (
-    <resultContext.Provider
+    <ResultContext.Provider
       value={{
         resultConfig: resultConfig,
         updateResultConfig: updateResultConfig,
       }}
     >
       <TargetBar />
-    </resultContext.Provider>
+    </ResultContext.Provider>
   );
 }
 
 //prop-types
 TranslateResult.propTypes = {
-  isPowerOn: propTypes.bool.isRequired,
-  resultConfig: propTypes.shape({
+  initialResultConfig: propTypes.shape({
     isPower: propTypes.bool.isRequired,
     targetLang: propTypes.string.isRequired,
     targetTool: propTypes.string.isRequired,

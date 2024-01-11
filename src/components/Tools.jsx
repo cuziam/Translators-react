@@ -1,6 +1,15 @@
-import React from "react";
+import { useContext } from "react";
+import { SourceContext, ResultContext } from "./Context";
 
 function Tools() {
+  //상위 컴포넌트가 SourceContext.Provider인 경우와 ResultContext.Provider인 경우를 구분하여 Context를 가져온다.
+  let context;
+  if (useContext(SourceContext) !== undefined) {
+    context = useContext(SourceContext);
+  } else {
+    context = useContext(ResultContext);
+  }
+
   return (
     <div className="Tools w-14 h-6 justify-start items-center gap-2 inline-flex">
       <svg
@@ -8,6 +17,7 @@ function Tools() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="group w-6 h-6"
+        onClick={() => context.copy()}
       >
         <g id="icon-copy">
           <path

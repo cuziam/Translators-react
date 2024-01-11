@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { Switch } from "@headlessui/react";
-import { resultContext } from "./Context";
+import { ResultContext } from "./Context";
 
 function Toggle() {
-  const { isPower } = useContext(resultContext).resultConfig;
-  const { updateResultConfig } = useContext(resultContext);
-  console.log("isPower:", isPower);
+  const { isPower } = useContext(ResultContext).resultConfig;
+  const { updateResultConfig } = useContext(ResultContext);
+
   return (
     <div className={"w-9 h-9 ml-1 flex justify-center items-center"}>
       <Switch

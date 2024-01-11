@@ -1,5 +1,3 @@
-import { useContext } from "react";
-
 import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
@@ -9,13 +7,14 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-function Dropdown({ optionsName, options }) {
-  //optionsName is the name of the dropdown
-  //options is an array of objects
-  const [clicked, setClicked] = useState(options[0]); //default value is the first element in the array
+//optionsName is the name of the dropdown
+//options is an array of objects
+function Dropdown({ optionsName, options, initialOption, updateConfig }) {
+  const [clicked, setClicked] = useState(initialOption); //default value is the first element in the array
 
-  const handleClicked = (option) => {
+  const handleClicked = (optionsName, option) => {
     setClicked(option);
+    updateConfig(optionsName, option);
   };
 
   return (
@@ -55,7 +54,7 @@ function Dropdown({ optionsName, options }) {
                         active ? "bg-gray-100" : "", // 마우스 오버 시 스타일
                         "block px-4 py-2 text-sm"
                       )}
-                      onClick={() => handleClicked(option)}
+                      onClick={() => handleClicked(optionsName, option)}
                     >
                       {option}
                     </a>
@@ -71,8 +70,10 @@ function Dropdown({ optionsName, options }) {
 }
 
 Dropdown.propTypes = {
-  optionsName: propTypes.string,
+  optionsName: propTypes.string.isRequired,
   options: propTypes.array.isRequired,
+  initialOption: propTypes.string.isRequired,
+  updateConfig: propTypes.func.isRequired,
 };
 
 export default Dropdown;
