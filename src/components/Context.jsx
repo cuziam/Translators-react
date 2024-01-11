@@ -1,6 +1,6 @@
 // PowerContext.js
 import React from "react";
 
-const PowerContext = React.createContext();
+const resultContext = React.createContext();
 
-export { PowerContext };
+export { resultContext };

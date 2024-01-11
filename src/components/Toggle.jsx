@@ -1,17 +1,18 @@
 import { useContext } from "react";
 import { Switch } from "@headlessui/react";
-import { PowerContext } from "./Context";
+import { resultContext } from "./Context";
 
 function Toggle() {
-  const { power, setPower } = useContext(PowerContext);
-
+  const { isPower } = useContext(resultContext).resultConfig;
+  const { updateResultConfig } = useContext(resultContext);
+  console.log("isPower:", isPower);
   return (
     <div className={"w-9 h-9 ml-1 flex justify-center items-center"}>
       <Switch
-        checked={power}
-        onChange={setPower}
+        checked={isPower}
+        onChange={() => updateResultConfig("isPower", !isPower)}
         className={`${
-          power
+          isPower
             ? "bg-primary  hover:bg-dangerGray"
             : "bg-danger hover:bg-primaryGray"
         } relative inline-flex h-4 w-9 items-center rounded-full`}
@@ -19,7 +20,7 @@ function Toggle() {
         <span className="sr-only">Enable notifications</span>
         <span
           className={`${
-            power ? "translate-x-5" : "translate-x-1"
+            isPower ? "translate-x-5" : "translate-x-1"
           } inline-block h-3 w-3 transform rounded-full bg-white transition`}
         />
       </Switch>

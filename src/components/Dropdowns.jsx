@@ -1,11 +1,12 @@
-import React from "react";
+import { useContext } from "react";
 import Dropdown from "./Dropdown";
-import supported from "../data/supported.json"; //수정 필요: db에서 받아오거나, 코드 내에서 처리할 것
+import { resultContext } from "./Context";
 
 function Dropdowns() {
-  console.log(supported);
-  const tools = supported.supportedTools.sort();
-  const targetLanguages = supported.deepLSupportedLangs.targetLangs.sort();
+  const resultContextValue = useContext(resultContext);
+  const tools = resultContextValue.resultConfig.supportedTools;
+  const targetLanguages = resultContextValue.resultConfig.supportedLangs;
+
   return (
     <div className="Dropdowns w-[260px] h-9 justify-start items-center inline-flex overflow-x-visible text-ellipsis">
       <Dropdown optionsName="tools" options={tools} />
