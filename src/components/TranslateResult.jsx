@@ -1,17 +1,18 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 
 //user-defined components
 import TargetBar from "./TargetBar";
 import TargetEditarea from "./TargetEditarea";
 import TargetToolbar from "./TargetToolbar";
-import { ResultContext, ResultsContext } from "./Context";
+import { TranslateContext, ResultContext } from "./Context";
 import propTypes from "prop-types";
 
 function TranslateResult({ index }) {
-  const { resultsConfig, updateResultsConfig } = useContext(ResultsContext);
+  const { initialResultsConfig, updateResultsConfig } =
+    useContext(TranslateContext);
 
   //define state for TranslateResult
-  const [resultConfig, setResultConfig] = useState(resultsConfig[index]);
+  const [resultConfig, setResultConfig] = useState(initialResultsConfig[index]);
 
   //define functions for TranslateResult
   //update resultConfig
@@ -21,10 +22,19 @@ function TranslateResult({ index }) {
     setResultConfig((currentConfig) => ({ ...currentConfig, [key]: value }));
   };
 
-  //update resultsConfig
+  //update resultsConfig(side effect)
   useEffect(() => {
     updateResultsConfig(index, resultConfig);
-  }, [resultConfig, index, updateResultsConfig]);
+  }, [resultConfig]);
+
+  //util functions
+  const copyRef = useRef(null);
+  const copyText = () => {
+    console.log(copyRef.current);
+    const text = copyRef.current.innerText;
+    navigator.clipboard.writeText(text);
+    alert("Copied!");
+  };
 
   //render
   return resultConfig.isPower === true ? (
@@ -32,11 +42,12 @@ function TranslateResult({ index }) {
       value={{
         resultConfig: resultConfig,
         updateResultConfig: updateResultConfig,
+        copyText: copyText,
       }}
     >
       <div className="PowerOn w-80 h-48 bg-white flex-col justify-center items-start flex">
         <TargetBar />
-        <TargetEditarea />
+        <TargetEditarea ref={copyRef} />
         <TargetToolbar />
       </div>
     </ResultContext.Provider>
@@ -54,6 +65,7 @@ function TranslateResult({ index }) {
 
 //prop-types
 TranslateResult.propTypes = {
+  index: propTypes.number.isRequired,
   initialResultConfig: propTypes.shape({
     isPower: propTypes.bool.isRequired,
     targetLang: propTypes.string.isRequired,

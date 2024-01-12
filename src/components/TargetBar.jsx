@@ -7,7 +7,7 @@ import { ResultContext } from "./Context";
 
 function TargetBar() {
   const { isPower } = useContext(ResultContext).resultConfig;
-  console.log(isPower);
+
   let className;
 
   if (isPower === true) {
