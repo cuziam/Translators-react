@@ -25,7 +25,7 @@ function TranslateResult({ index }) {
   //update resultsConfig(side effect)
   useEffect(() => {
     updateResultsConfig(index, resultConfig);
-  }, [resultConfig]);
+  }, [updateResultsConfig, resultConfig, index]);
 
   //util functions
   const copyRef = useRef(null);
