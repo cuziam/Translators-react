@@ -25,6 +25,7 @@ module.exports = {
     },
     fontFamily: {
       sans: ["Inter", "sans-serif"],
+      righteous: ["Righteous", "cursive"],
     },
   },
 };

@@ -18,7 +18,7 @@ function Dropdown({ optionsName, options, initialOption, updateConfig }) {
   };
 
   return (
-    <Menu as="div" className="relative inline-block text-left">
+    <Menu as="div" className="relative inline-block text-left group">
       <div>
         <Menu.Button className="h-9 px-3 py-2 bg-white bg-opacity-5 rounded-md justify-start items-center gap-2 inline-flex hover:bg-primaryGray">
           {/*this is the name of the dropdown*/}

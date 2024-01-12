@@ -1,11 +1,14 @@
 import { TranslateContext } from "./Context";
 
+//axios
+import axios from "axios";
+
 //user-defined components
 import TranslateSource from "./TranslateSource";
 import TranslateResults from "./TranslateResults";
 
 //data
-import supported from "../data/supported.json"; //수정 필요: db에서 받아오거나, 코드 내에서 처리할 것
+import supported from "../../data/supported.json"; //수정 필요: db에서 받아오거나, 코드 내에서 처리할 것
 
 export default function Translate() {
   //utility functions
@@ -24,7 +27,7 @@ export default function Translate() {
   const supportedSourceLangs = supported.deepLSupportedLangs.srcLangs.sort();
   const supportedTargetLangs = supported.deepLSupportedLangs.targetLangs.sort();
   const initialSourceLang = "Korean";
-  const initialResultLang = "English";
+  const initialResultLang = "English (American)";
 
   const initialSourceConfig = {
     sourceLang: initialSourceLang,
@@ -89,6 +92,23 @@ export default function Translate() {
     return initialResultsConfig[index];
   };
 
+  //translate functions
+  const translate = async () => {
+    try {
+      const response = axios({
+        method: "get",
+        url: "https://translators24.com",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+        },
+      });
+      console.log("translate response: ", response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //render
   return (
     <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto">
@@ -96,6 +116,7 @@ export default function Translate() {
         value={{
           initialSourceConfig,
           updateSourceConfig,
+          translate,
         }}
       >
         <TranslateSource initialSourceConfig={initialSourceConfig} />
