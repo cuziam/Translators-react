@@ -8,24 +8,8 @@ import { TranslateContext, ResultContext } from "./Context";
 import propTypes from "prop-types";
 
 function TranslateResult({ index }) {
-  const { initialResultsConfig, updateResultsConfig } =
-    useContext(TranslateContext);
-
   //define state for TranslateResult
-  const [resultConfig, setResultConfig] = useState(initialResultsConfig[index]);
-
-  //define functions for TranslateResult
-  //update resultConfig
-  const updateResultConfig = (key, value) => {
-    console.log("update result config...");
-    console.log("key: ", key, "value: ", value);
-    setResultConfig((currentConfig) => ({ ...currentConfig, [key]: value }));
-  };
-
-  //update resultsConfig(side effect)
-  useEffect(() => {
-    updateResultsConfig(index, resultConfig);
-  }, [updateResultsConfig, resultConfig, index]);
+  const { resultsConfig, updateResultsConfig } = useContext(TranslateContext);
 
   //util functions
   const copyRef = useRef(null);
@@ -36,13 +20,19 @@ function TranslateResult({ index }) {
     alert("Copied!");
   };
 
+  //define resultConfig and updateResultConfig
+  const resultConfig = resultsConfig[index];
+  const updateResultConfig = (key, value) => {
+    updateResultsConfig(index, key, value);
+  };
+
   //render
   return resultConfig.isPower === true ? (
     <ResultContext.Provider
       value={{
-        resultConfig: resultConfig,
-        updateResultConfig: updateResultConfig,
-        copyText: copyText,
+        resultConfig,
+        updateResultConfig,
+        copyText,
       }}
     >
       <div className="PowerOn w-80 h-48 bg-white flex-col justify-center items-start flex">
@@ -54,8 +44,8 @@ function TranslateResult({ index }) {
   ) : (
     <ResultContext.Provider
       value={{
-        resultConfig: resultConfig,
-        updateResultConfig: updateResultConfig,
+        resultConfig,
+        updateResultConfig,
       }}
     >
       <TargetBar />

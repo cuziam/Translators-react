@@ -4,6 +4,7 @@ import { TranslateContext } from "./Context";
 import Dropdown from "./Dropdown";
 
 export default function SourceBar() {
+  console.log("안녕 여러분", useContext(TranslateContext));
   const {
     sourceConfig: { sourceLang, supportedLangs },
     updateSourceConfig,
