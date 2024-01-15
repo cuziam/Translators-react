@@ -63,6 +63,7 @@ export default function Translate() {
   const { initialSourceConfig, initialResultsConfig } = getInitialConfigs();
   const [sourceConfig, setSourceConfig] = useState(initialSourceConfig);
   const [resultsConfig, setResultsConfig] = useState(initialResultsConfig);
+  const [eventSource, setEventSource] = useState(null);
 
   //update functions
   const updateSourceConfig = (key, value) => {
@@ -83,16 +84,38 @@ export default function Translate() {
 
   //translate functions
   const translate = async () => {
+    //get data to send
+    console.log(sourceConfig, resultsConfig);
+    const { sourceLang, sourceText } = sourceConfig;
+    const dataToSend = [];
+    resultsConfig.forEach((resultConfig, index) => {
+      if (resultConfig.isPower === true) {
+        const { targetLang, targetTool } = resultConfig;
+        dataToSend.push({
+          index: index,
+          srcLang: sourceLang,
+          srcText: sourceText,
+          targetLang: targetLang,
+          targetTool: targetTool,
+        });
+      }
+    });
+    console.log("dataToSend: ", dataToSend);
+
+    //send data and get response
     try {
       const response = axios({
-        method: "get",
-        url: "http://localhost:4788",
+        method: "post",
+        url: "http://localhost:4788/translate",
+        data: dataToSend,
       });
       console.log("translate response: ", response);
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {}, [eventSource]);
 
   //render
   return (
