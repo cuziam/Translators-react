@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { TranslateContext } from "./Context";
 
 //axios
@@ -58,64 +58,118 @@ const getInitialConfigs = () => {
   return { initialSourceConfig, initialResultsConfig };
 };
 
+//translate functions
+const translateText = async (sourceConfig, resultsConfig) => {
+  console.log(
+    "translateText start... current Config:",
+    sourceConfig,
+    resultsConfig
+  );
+
+  //get data to send
+  const { sourceLang, sourceText } = sourceConfig;
+  const dataToSend = [];
+  resultsConfig.forEach((resultConfig, index) => {
+    if (resultConfig.isPower === true) {
+      const { targetLang, targetTool } = resultConfig;
+      dataToSend.push({
+        index: index,
+        srcLang: sourceLang,
+        srcText: sourceText,
+        targetLang: targetLang,
+        targetTool: targetTool,
+      });
+    }
+  });
+
+  console.log("dataToSend:", dataToSend);
+  //send data and get response
+  try {
+    const response = await axios({
+      method: "post",
+      url: "http://localhost:4788/translate",
+      data: dataToSend,
+    });
+    console.log("translate response: ", response);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default function Translate() {
-  //initial configs
+  console.log("render Translate...");
+
+  //initial states
   const { initialSourceConfig, initialResultsConfig } = getInitialConfigs();
   const [sourceConfig, setSourceConfig] = useState(initialSourceConfig);
   const [resultsConfig, setResultsConfig] = useState(initialResultsConfig);
-  const [eventSource, setEventSource] = useState(null);
+  const [shouldTranslate, setShouldTranslate] = useState(false);
+
+  //refs
+  const eventSourceRef = useRef(null);
 
   //update functions
-  const updateSourceConfig = (key, value) => {
-    console.log("update source config...");
-    setSourceConfig({ ...sourceConfig, [key]: value });
-    console.log("sourceConfig[key]: ", sourceConfig[key]);
-  };
+  const updateSourceConfig = useCallback(
+    (key, value) => {
+      setSourceConfig({ ...sourceConfig, [key]: value });
+    },
+    [sourceConfig]
+  );
 
-  const updateResultsConfig = (index, key, value) => {
-    console.log("update results config...");
+  const updateResultsConfig = useCallback((index, key, value) => {
     setResultsConfig((prevResultsConfig) => {
       const newResultsConfig = [...prevResultsConfig];
       newResultsConfig[index] = { ...newResultsConfig[index], [key]: value };
       return newResultsConfig;
     });
-    console.log("resultsConfig[index][key]: ", resultsConfig[index][key]);
-  };
+  }, []);
 
-  //translate functions
-  const translate = async () => {
-    //get data to send
-    console.log(sourceConfig, resultsConfig);
-    const { sourceLang, sourceText } = sourceConfig;
-    const dataToSend = [];
-    resultsConfig.forEach((resultConfig, index) => {
-      if (resultConfig.isPower === true) {
-        const { targetLang, targetTool } = resultConfig;
-        dataToSend.push({
-          index: index,
-          srcLang: sourceLang,
-          srcText: sourceText,
-          targetLang: targetLang,
-          targetTool: targetTool,
-        });
-      }
-    });
-    console.log("dataToSend: ", dataToSend);
+  const updateShouldTranslate = useCallback((value) => {
+    setShouldTranslate(value);
+  }, []);
 
-    //send data and get response
-    try {
-      const response = axios({
-        method: "post",
-        url: "http://localhost:4788/translate",
-        data: dataToSend,
-      });
-      console.log("translate response: ", response);
-    } catch (error) {
-      console.log(error);
+  //translate
+  const translate = useCallback(async () => {
+    translateText(sourceConfig, resultsConfig);
+  }, [sourceConfig, resultsConfig]);
+
+  //translate when shouldTranslate is true
+  useEffect(() => {
+    if (shouldTranslate) {
+      translate();
+      updateShouldTranslate(false);
     }
-  };
+  }, [
+    sourceConfig.sourceText,
+    shouldTranslate,
+    translate,
+    updateShouldTranslate,
+  ]);
 
-  useEffect(() => {}, [eventSource]);
+  //eventController
+  useEffect(() => {
+    if (eventSourceRef.current === null) {
+      eventSourceRef.current = new EventSource("http://localhost:4788/events");
+
+      eventSourceRef.current.onmessage = (event) => {
+        console.log("eventSource data:", event.data);
+        const { index, targetText } = JSON.parse(event.data)[0];
+        console.log("index:", index, "targetText:", targetText);
+        updateResultsConfig(index, "targetText", targetText);
+      };
+      eventSourceRef.current.onopen = (event) => {
+        console.log("eventSource open:", event);
+      };
+      eventSourceRef.current.onerror = (event) => {
+        console.log("eventSource error:", event);
+      };
+
+      return () => {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      };
+    }
+  }, []);
 
   //render
   return (
@@ -125,6 +179,7 @@ export default function Translate() {
           translate,
           sourceConfig,
           updateSourceConfig,
+          updateShouldTranslate,
         }}
       >
         <TranslateSource />

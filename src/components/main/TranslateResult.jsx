@@ -37,7 +37,10 @@ function TranslateResult({ index }) {
     >
       <div className="PowerOn w-80 h-48 bg-white flex-col justify-center items-start flex">
         <TargetBar />
-        <TargetEditarea ref={copyRef} />
+        <TargetEditarea
+          ref={copyRef}
+          targetText={resultsConfig[index].targetText}
+        />
         <TargetToolbar />
       </div>
     </ResultContext.Provider>

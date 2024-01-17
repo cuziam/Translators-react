@@ -22,6 +22,7 @@ function TranslateSource() {
 
   const updateSourceText = () => {
     const text = editareaRef.current.value;
+    console.log("updateSourceText:", text);
     updateSourceConfig("sourceText", text);
   };
 
