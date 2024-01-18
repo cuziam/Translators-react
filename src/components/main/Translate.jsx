@@ -162,6 +162,11 @@ export default function Translate() {
       };
       eventSourceRef.current.onerror = (event) => {
         console.log("eventSource error:", event);
+        console.log(
+          "eventSource close... eventSource state:",
+          eventSourceRef.current.readyState
+        );
+        eventSourceRef.current.close();
       };
 
       return () => {
