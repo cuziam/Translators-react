@@ -7,6 +7,7 @@ import axios from "axios";
 //user-defined components
 import TranslateSource from "./TranslateSource";
 import TranslateResults from "./TranslateResults";
+import HistoryModal from "./history/HistoryModal";
 
 //data
 import supported from "../../data/supported.json"; //수정 필요: db에서 받아오거나, 코드 내에서 처리할 것
@@ -104,9 +105,11 @@ export default function Translate() {
   const [sourceConfig, setSourceConfig] = useState(initialSourceConfig);
   const [resultsConfig, setResultsConfig] = useState(initialResultsConfig);
   const [shouldTranslate, setShouldTranslate] = useState(false);
+  const [shouldModalOpen, setShouldModalOpen] = useState(false);
 
   //refs
   const eventSourceRef = useRef(null);
+  const history = useRef([]);
 
   //update functions
   const updateSourceConfig = useCallback(
@@ -126,6 +129,10 @@ export default function Translate() {
 
   const updateShouldTranslate = useCallback((value) => {
     setShouldTranslate(value);
+  }, []);
+
+  const updateShouldModalOpen = useCallback((value) => {
+    setShouldModalOpen(value);
   }, []);
 
   //translate
@@ -150,41 +157,49 @@ export default function Translate() {
   useEffect(() => {
     if (eventSourceRef.current === null) {
       eventSourceRef.current = new EventSource("http://localhost:4788/events");
-
-      eventSourceRef.current.onmessage = (event) => {
-        console.log("eventSource data:", event.data);
-        const { index, targetText } = JSON.parse(event.data)[0];
-        console.log("index:", index, "targetText:", targetText);
-        updateResultsConfig(index, "targetText", targetText);
-      };
-      eventSourceRef.current.onopen = (event) => {
-        console.log("eventSource open:", event);
-      };
-      eventSourceRef.current.onerror = (event) => {
-        console.log("eventSource error:", event);
-        console.log(
-          "eventSource close... eventSource state:",
-          eventSourceRef.current.readyState
-        );
-        eventSourceRef.current.close();
-      };
-
-      return () => {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-      };
     }
+    eventSourceRef.current.onmessage = (event) => {
+      //statuscode 200이 아닌 경우
+      if (event.lastEventId !== "200") {
+        console.log("eventSource error:", event);
+        return;
+      }
+      //statuscode 200인 경우
+      console.log("eventSource data:", event.data);
+      const { index, srcText, targetText } = JSON.parse(event.data)[0];
+      const historyItem = {
+        srcText: srcText,
+        targetText: targetText,
+      };
+      history.current.push(historyItem);
+      console.log("history:", history.current);
+      updateResultsConfig(index, "targetText", targetText);
+    };
+    eventSourceRef.current.onopen = (event) => {
+      console.log("eventSource open:", event);
+    };
+
+    return () => {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    };
   }, []);
 
   //render
   return (
     <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto">
+      <HistoryModal
+        shouldModalOpen={shouldModalOpen}
+        updateShouldModalOpen={updateShouldModalOpen}
+        historyRef={history}
+      />
       <TranslateContext.Provider
         value={{
           translate,
           sourceConfig,
           updateSourceConfig,
           updateShouldTranslate,
+          updateShouldModalOpen,
         }}
       >
         <TranslateSource />

@@ -21,6 +21,7 @@ module.exports = {
       icon: "#525252",
       border: "#d9d9d9",
 
+      enabled: "#D9D9D9",
       disabled: "#0d0d0d",
     },
     fontFamily: {
