@@ -49,42 +49,6 @@ function Tools() {
               className="group-hover:fill-primary"
             />
           </svg>{" "}
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="group w-6 h-6"
-            onClick={() => context.undo()}
-          >
-            <g id="undo">
-              <path
-                id="Vector"
-                d="M7 19V17H14.1C15.15 17 16.0627 16.6667 16.838 16C17.6133 15.3333 18.0007 14.5 18 13.5C18 12.5 17.6127 11.6667 16.838 11C16.0633 10.3333 15.1507 10 14.1 10H7.8L10.4 12.6L9 14L4 9L9 4L10.4 5.4L7.8 8H14.1C15.7167 8 17.1043 8.525 18.263 9.575C19.4217 10.625 20.0007 11.9333 20 13.5C20 15.0667 19.421 16.375 18.263 17.425C17.105 18.475 15.7173 19 14.1 19H7Z"
-                fill="#525252"
-                className="group-hover:fill-primary"
-              />
-            </g>
-          </svg>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="group w-6 h-6"
-            onClick={() => context.redo()}
-          >
-            <g id="redo">
-              <path
-                id="Vector"
-                d="M9.9 19C8.28333 19 6.89567 18.475 5.737 17.425C4.57833 16.375 3.99933 15.0667 4 13.5C4 11.9333 4.57933 10.625 5.738 9.575C6.89667 8.525 8.284 8 9.9 8H16.2L13.6 5.4L15 4L20 9L15 14L13.6 12.6L16.2 10H9.9C8.85 10 7.93733 10.3333 7.162 11C6.38667 11.6667 5.99933 12.5 6 13.5C6 14.5 6.38767 15.3333 7.163 16C7.93833 16.6667 8.85067 17 9.9 17H17V19H9.9Z"
-                fill="#525252"
-                className="group-hover:fill-primary"
-              />
-            </g>
-          </svg>
         </>
       ) : (
         <></>
