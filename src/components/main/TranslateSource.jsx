@@ -8,9 +8,36 @@ import SourceToolbar from "./SourceToolbar";
 
 import propTypes from "prop-types";
 
+class undoRedoHistory {
+  constructor() {
+    this.undoHistory = [];
+    this.redoHistory = [];
+  }
+
+  addAction(action) {
+    this.undoHistory.push(action);
+    this.redoHistory = []; //redoHistory 초기화
+  }
+
+  undo() {
+    if (this.undoHistory.length === 0) return ""; //undoHistory가 비어있으면 빈 문자열 반환
+    const action = this.undoHistory.pop();
+    this.redoHistory.push(action);
+    return action;
+  }
+
+  redo() {
+    if (this.redoHistory.length === 0) return ""; //redoHistory가 비어있으면 빈 문자열 반환
+    const action = this.redoHistory.pop();
+    this.undoHistory.push(action);
+    return action;
+  }
+}
+
 function TranslateSource() {
   //context
   const { updateSourceConfig } = useContext(TranslateContext);
+
   //util functions
   const editareaRef = useRef(null);
   const copyText = () => {
