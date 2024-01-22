@@ -35,7 +35,7 @@ function TranslateResult({ index }) {
         copyText,
       }}
     >
-      <div className="PowerOn w-80 h-48 bg-white flex-col justify-center items-start flex">
+      <div className="PowerOn w-80 h-48 bg-white flex-col justify-center items-start flex rounded-md">
         <TargetBar />
         <TargetEditarea
           ref={copyRef}

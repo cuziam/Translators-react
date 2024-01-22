@@ -160,10 +160,10 @@ export default function Translate() {
     }
     eventSourceRef.current.onmessage = (event) => {
       //statuscode 200이 아닌 경우
-      if (event.lastEventId !== "200") {
-        console.log("eventSource error:", event);
-        return;
-      }
+      // if (event.lastEventId !== "200") {
+      //   console.log("eventSource error:", event);
+      //   return;
+      // }
       //statuscode 200인 경우
       console.log("eventSource data:", event.data);
       const { index, srcText, targetText } = JSON.parse(event.data)[0];
@@ -187,7 +187,7 @@ export default function Translate() {
 
   //render
   return (
-    <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto">
+    <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto ">
       <HistoryModal
         shouldModalOpen={shouldModalOpen}
         updateShouldModalOpen={updateShouldModalOpen}
