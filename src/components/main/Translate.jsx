@@ -88,7 +88,7 @@ const translateText = async (sourceConfig, resultsConfig) => {
   try {
     const response = await axios({
       method: "post",
-      url: "http://localhost:4788/translate",
+      url: "https://translators24.com/translate",
       data: dataToSend,
     });
     console.log("translate response: ", response);
@@ -156,7 +156,9 @@ export default function Translate() {
   //eventController
   useEffect(() => {
     if (eventSourceRef.current === null) {
-      eventSourceRef.current = new EventSource("http://localhost:4788/events");
+      eventSourceRef.current = new EventSource(
+        "https://translators24.com/events"
+      );
     }
     eventSourceRef.current.onmessage = (event) => {
       //statuscode 200이 아닌 경우
