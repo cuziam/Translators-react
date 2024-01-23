@@ -1,7 +1,9 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useContext } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import propTypes from "prop-types";
+
+import { ResultContext } from "./Context";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -40,11 +42,11 @@ function Dropdown({ optionsName, options, initialOption, updateConfig }) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute max-h-48 overflow-auto left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Menu.Items className="absolute max-h-48 overflow-auto left-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
-            {options.map((option) => {
+            {options.map((option, idx) => {
               return (
-                <Menu.Item key={option}>
+                <Menu.Item key={idx}>
                   {({ active }) => (
                     <a
                       className={classNames(

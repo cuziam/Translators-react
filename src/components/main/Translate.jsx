@@ -189,7 +189,7 @@ export default function Translate() {
 
   //render
   return (
-    <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto ">
+    <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto mb-52">
       <HistoryModal
         shouldModalOpen={shouldModalOpen}
         updateShouldModalOpen={updateShouldModalOpen}
