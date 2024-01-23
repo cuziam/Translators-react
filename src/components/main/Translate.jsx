@@ -111,6 +111,7 @@ export default function Translate() {
   const eventSourceRef = useRef(null);
   const history = useRef([]);
 
+  //callbacks
   //update functions
   const updateSourceConfig = useCallback(
     (key, value) => {
@@ -140,20 +141,27 @@ export default function Translate() {
     translateText(sourceConfig, resultsConfig);
   }, [sourceConfig, resultsConfig]);
 
-  //translate when shouldTranslate is true
+  //번역 요청 및 로딩 처리
   useEffect(() => {
     if (shouldTranslate) {
       translate();
       updateShouldTranslate(false);
+      resultsConfig.forEach((_, index) => {
+        if (resultsConfig[index].isPower === true) {
+          updateResultsConfig(index, "isLoading", true);
+        }
+      });
     }
   }, [
     sourceConfig.sourceText,
     shouldTranslate,
     translate,
     updateShouldTranslate,
+    resultsConfig,
+    updateResultsConfig,
   ]);
 
-  //eventController
+  //번역 결과 처리
   useEffect(() => {
     if (eventSourceRef.current === null) {
       eventSourceRef.current = new EventSource(
@@ -176,6 +184,7 @@ export default function Translate() {
       history.current.push(historyItem);
       console.log("history:", history.current);
       updateResultsConfig(index, "targetText", targetText);
+      updateResultsConfig(index, "isLoading", false);
     };
     eventSourceRef.current.onopen = (event) => {
       console.log("eventSource open:", event);

@@ -1,7 +1,10 @@
-import { forwardRef, useState, useContext, useEffect } from "react";
-import { SourceContext } from "./Context";
+import { forwardRef, useState, useContext, useEffect, useRef } from "react";
+import { SourceContext, TranslateContext } from "./Context";
 
 const SourceEditarea = forwardRef(function SourceEditarea(props, ref) {
+  const { updateSourceText } = useContext(SourceContext);
+  const { updateShouldTranslate } = useContext(TranslateContext);
+
   const [currentLength, setCurrentLength] = useState(0);
 
   //util functions
@@ -9,6 +12,28 @@ const SourceEditarea = forwardRef(function SourceEditarea(props, ref) {
   const onChangeHandler = (e) => {
     setCurrentLength(e.target.value.length);
   };
+
+  //번역 요청 디바운싱
+  const previousLengthRef = useRef(null); // 이전 길이를 추적하기 위한 ref
+  useEffect(() => {
+    // 첫 번째 렌더링에서는 이전 길이가 null이므로 아무 것도 하지 않음
+    if (previousLengthRef.current === null) {
+      previousLengthRef.current = currentLength;
+    } else {
+      // 그 외의 경우에는 디바운싱 로직 실행
+      if (previousLengthRef.current !== currentLength) {
+        const debounce = setTimeout(() => {
+          updateSourceText();
+          updateShouldTranslate(true);
+        }, 1200);
+
+        // 이전 길이를 현재 길이로 업데이트
+        previousLengthRef.current = currentLength;
+
+        return () => clearTimeout(debounce);
+      }
+    }
+  }, [currentLength, updateSourceText, updateShouldTranslate]);
 
   return (
     <>
