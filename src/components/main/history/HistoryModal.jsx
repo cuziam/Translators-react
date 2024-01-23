@@ -22,17 +22,17 @@ export default function HistoryModal({
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
       {/* Full-screen scrollable container */}
-      <div className="fixed flex inset-0 w-screen m-auto justify-center items-center">
+      <div className="fixed inset-0 w-screen">
         {/* Container to center the panel */}
-        <button
-          onClick={() => updateShouldModalOpen(false)}
-          className="right-4 bottom-16 text-white bg-icon rounded-2xl py-1 px-3 hover:bg-gray-700 focus:outline-none focus:ring"
-        >
-          x
-        </button>
-        <div className="flex-col items-center max-h-96 overflow-y-auto justify-center w-10/12 p-4">
+        <div className="flex min-h-full items-center justify-center p-4">
           {/* The actual dialog panel  */}
-          <div className="Historymodal w-full overflow-y-auto bg-neutral-100 bg-opacity-80 rounded-lg shadow flex-col justify-start items-start inline-flex">
+          <button
+            onClick={() => updateShouldModalOpen(false)}
+            className="absolute right-8 top-52 text-white bg-black rounded-2xl py-2 px-3 hover:bg-gray-700 focus:outline-none focus:ring"
+          >
+            &times; {/* 크로스 기호 */}
+          </button>
+          <div className="Historymodal relative w-11/12 h-96 overflow-y-auto bg-neutral-100 bg-opacity-80 rounded-lg shadow flex-col justify-start items-start inline-flex">
             {historyRef.current.length !== 0 ? (
               [...historyRef.current].reverse().map((historyItem, index) => {
                 //historyRef.current는 history 배열,history 배열을 뒤집어서 출력
