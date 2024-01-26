@@ -194,7 +194,7 @@ export default function Translate() {
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     };
-  }, []);
+  }, [updateResultsConfig]);
 
   //render
   return (
