@@ -88,7 +88,7 @@ const translateText = async (sourceConfig, resultsConfig) => {
   try {
     const response = await axios({
       method: "post",
-      url: "http://localhost:4788/translate",
+      url: "https://translators24.com/translate",
       data: dataToSend,
     });
     console.log("translate response: ", response);
@@ -111,6 +111,7 @@ export default function Translate() {
   const eventSourceRef = useRef(null);
   const history = useRef([]);
 
+  //callbacks
   //update functions
   const updateSourceConfig = useCallback(
     (key, value) => {
@@ -140,23 +141,32 @@ export default function Translate() {
     translateText(sourceConfig, resultsConfig);
   }, [sourceConfig, resultsConfig]);
 
-  //translate when shouldTranslate is true
+  //번역 요청 및 로딩 처리
   useEffect(() => {
     if (shouldTranslate) {
       translate();
       updateShouldTranslate(false);
+      resultsConfig.forEach((_, index) => {
+        if (resultsConfig[index].isPower === true) {
+          updateResultsConfig(index, "isLoading", true);
+        }
+      });
     }
   }, [
     sourceConfig.sourceText,
     shouldTranslate,
     translate,
     updateShouldTranslate,
+    resultsConfig,
+    updateResultsConfig,
   ]);
 
-  //eventController
+  //번역 결과 처리
   useEffect(() => {
     if (eventSourceRef.current === null) {
-      eventSourceRef.current = new EventSource("http://localhost:4788/events");
+      eventSourceRef.current = new EventSource(
+        "https://translators24.com/events"
+      );
     }
     eventSourceRef.current.onmessage = (event) => {
       //statuscode 200이 아닌 경우
@@ -174,6 +184,7 @@ export default function Translate() {
       history.current.push(historyItem);
       console.log("history:", history.current);
       updateResultsConfig(index, "targetText", targetText);
+      updateResultsConfig(index, "isLoading", false);
     };
     eventSourceRef.current.onopen = (event) => {
       console.log("eventSource open:", event);
@@ -187,7 +198,7 @@ export default function Translate() {
 
   //render
   return (
-    <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto ">
+    <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto mb-52">
       <HistoryModal
         shouldModalOpen={shouldModalOpen}
         updateShouldModalOpen={updateShouldModalOpen}

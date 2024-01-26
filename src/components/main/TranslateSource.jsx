@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { useEffect, useContext } from "react";
 import { SourceContext, TranslateContext } from "./Context";
 
@@ -40,18 +40,18 @@ function TranslateSource() {
 
   //util functions
   const editareaRef = useRef(null);
-  const copyText = () => {
+  const copyText = useCallback(() => {
     console.log(editareaRef.current);
     const text = editareaRef.current.value;
     navigator.clipboard.writeText(text);
     alert("Copied!");
-  };
+  }, []);
 
-  const updateSourceText = () => {
+  const updateSourceText = useCallback(() => {
     const text = editareaRef.current.value;
     console.log("updateSourceText:", text);
     updateSourceConfig("sourceText", text);
-  };
+  }, []);
 
   //render
   return (

@@ -22,7 +22,7 @@ const SourceEditarea = forwardRef(function SourceEditarea(props, ref) {
       const debounce = setTimeout(() => {
         updateSourceText();
         updateShouldTranslate(true);
-      }, 1500);
+      }, 1000);
 
       return () => clearTimeout(debounce);
     }
