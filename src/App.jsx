@@ -6,7 +6,7 @@ import Header from "./components/head/Header";
 function App() {
   return (
     <>
-      <div className="dark:bg-disabled">
+      <div>
         <Header />
         <Translate />
       </div>
