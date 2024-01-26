@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { TranslateContext } from "./Context";
+import propTypes from "prop-types";
 
-//axios
+//communication
 import axios from "axios";
 
 //user-defined components
@@ -88,7 +89,7 @@ const translateText = async (sourceConfig, resultsConfig) => {
   try {
     const response = await axios({
       method: "post",
-      url: "https://translators24.com/translate",
+      url: "http://localhost:4788/translate",
       data: dataToSend,
     });
     console.log("translate response: ", response);
@@ -97,7 +98,7 @@ const translateText = async (sourceConfig, resultsConfig) => {
   }
 };
 
-export default function Translate() {
+export default function Translate({ webSocketRef }) {
   console.log("render Translate...");
 
   //initial states
@@ -108,7 +109,6 @@ export default function Translate() {
   const [shouldModalOpen, setShouldModalOpen] = useState(false);
 
   //refs
-  const eventSourceRef = useRef(null);
   const history = useRef([]);
 
   //callbacks
@@ -163,38 +163,26 @@ export default function Translate() {
 
   //번역 결과 처리
   useEffect(() => {
-    if (eventSourceRef.current === null) {
-      eventSourceRef.current = new EventSource(
-        "https://translators24.com/events"
-      );
-    }
-    eventSourceRef.current.onmessage = (event) => {
-      //statuscode 200이 아닌 경우
-      // if (event.lastEventId !== "200") {
-      //   console.log("eventSource error:", event);
-      //   return;
-      // }
-      //statuscode 200인 경우
-      console.log("eventSource data:", event.data);
-      const { index, srcText, targetText } = JSON.parse(event.data)[0];
-      const historyItem = {
-        srcText: srcText,
-        targetText: targetText,
-      };
+    if (webSocketRef.current === null) return;
+
+    const socket = webSocketRef.current;
+
+    const handleTranslationResult = (data) => {
+      console.log("translationResult:", data);
+      const { index, srcText, targetText } = data;
+      const historyItem = { srcText, targetText };
       history.current.push(historyItem);
       console.log("history:", history.current);
       updateResultsConfig(index, "targetText", targetText);
       updateResultsConfig(index, "isLoading", false);
     };
-    eventSourceRef.current.onopen = (event) => {
-      console.log("eventSource open:", event);
-    };
+
+    socket.on("translationResult", handleTranslationResult);
 
     return () => {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
+      socket.off("translationResult", handleTranslationResult); //메모리 누수 방지
     };
-  }, [updateResultsConfig]);
+  }, [webSocketRef.current, updateResultsConfig]);
 
   //render
   return (
