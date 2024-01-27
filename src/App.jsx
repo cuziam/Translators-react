@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 //user-defined components
-import Translate from "./components/main/Translate";
 import Header from "./components/head/Header";
+import Translate from "./components/main/Translate";
+import AiChat from "./components/main/ai/AiChat";
+
 function App() {
   const webSocketRef = useRef(null);
 
@@ -13,10 +15,10 @@ function App() {
 
       webSocketRef.current.on("connect", () => {
         console.log("서버에 연결되었습니다.");
-      });
-
-      webSocketRef.current.on("disconnect", () => {
-        console.log("서버와의 연결이 끊어졌습니다.");
+        webSocketRef.current.emit("connectAiChat");
+        webSocketRef.current.on("disconnect", () => {
+          console.log("서버와의 연결이 끊어졌습니다.");
+        });
       });
     }
 
@@ -34,6 +36,7 @@ function App() {
       <div>
         <Header />
         <Translate webSocketRef={webSocketRef} />
+        <AiChat webSocketRef={webSocketRef} />
       </div>
     </>
   );
