@@ -14,20 +14,50 @@ const AiChat = ({ webSocketRef }) => {
    * 서버로 전송할 메세지는 문자열이어야 하며 clientMessage라는 이벤트명으로 전송합니다.
    * 응답 메세지는 문자열이며 서버에서 serverMessage라는 이벤트를 통해 전달받습니다.
    */
-  const tempRef = useRef();
-  const sendMessage = useCallback(
-    (message) => {
-      console.log("message:", message);
-      webSocketRef.current.emit("clientMessage", message, (response) => {
-        console.log("response:", response);
-      });
-    },
-    [webSocketRef]
-  );
-
-  const [open, setOpen] = useState(true);
 
   const cancelButtonRef = useRef(null);
+  const chatHistoryRef = useRef(null);
+  const textareaRef = useRef(null);
+
+  const [history, setHistory] = useState([
+    { role: "server", message: "Hi, I'm AI chatbot. How can I help you?" },
+  ]);
+  const [open, setOpen] = useState(true);
+
+  const updateHistory = useCallback((role, message) => {
+    if (role !== "user" && role !== "server") {
+      console.log("role is not user or server");
+      return;
+    }
+    if (typeof message !== "string") {
+      console.log("message is not string");
+      return;
+    }
+    const record = {
+      role: role,
+      message: message,
+    };
+    setHistory((prev) => [...prev, record]);
+  }, []);
+
+  const sendMessage = useCallback(
+    (message) => {
+      updateHistory("user", message);
+      textareaRef.current.value = "";
+      webSocketRef.current.emit("clientMessage", message, (response) => {
+        console.log("server Message:", response);
+        updateHistory("server", response);
+      });
+    },
+    [webSocketRef, updateHistory]
+  );
+
+  useEffect(() => {
+    const chatContainer = chatHistoryRef.current;
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [history]);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -60,7 +90,7 @@ const AiChat = ({ webSocketRef }) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+              <Dialog.Panel className="relative transform overflow-hidden max-h-screen rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div className="bg-white px-4 pt-2 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start">
                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
@@ -68,21 +98,43 @@ const AiChat = ({ webSocketRef }) => {
                         as="h3"
                         className="text-base align-middle content-center font-bold leading-10 text-gray-900"
                       >
-                        Ask to AI chatbot
+                        Ask to AI assistant
                       </Dialog.Title>
                       <div className="container">
-                        <div className="w-full flex flex-col justify-between overflow-y-auto">
-                          <ClientMessage message="Hi Can you help me?" />
-                          <ServerMessage message="No problem what can i do for you?" />
-                          <ClientMessage message="Can you summarize this?" />
-                          <ServerMessage message="okay Let me help you" />
+                        <div
+                          ref={chatHistoryRef}
+                          className="w-full h-96 flex flex-col justify-start overflow-y-auto"
+                        >
+                          {history.map((record, index) => {
+                            if (record.role === "user") {
+                              return (
+                                <ClientMessage
+                                  key={index}
+                                  message={record.message}
+                                />
+                              );
+                            } else {
+                              return (
+                                <ServerMessage
+                                  key={index}
+                                  message={record.message}
+                                />
+                              );
+                            }
+                          })}
                         </div>
                         <div className="w-full py-2 flex items-end gap-1">
                           <textarea
+                            ref={textareaRef}
                             className="w-full font-sans py-2 px-3 rounded-xl focus:ring-primary focus:border-primary text-base"
                             placeholder="type your message here..."
                           />
-                          <button className="w-6 h-6 rounded-xl bg-primary">
+                          <button
+                            className="send w-6 h-6 rounded-xl bg-primary"
+                            onClick={() => {
+                              sendMessage(textareaRef.current.value);
+                            }}
+                          >
                             &uarr;
                           </button>
                         </div>
@@ -93,7 +145,7 @@ const AiChat = ({ webSocketRef }) => {
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                    className="cancel inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                     onClick={() => {
                       setOpen(false);
                     }}
