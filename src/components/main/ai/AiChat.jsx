@@ -19,12 +19,18 @@ const AiChat = ({ webSocketRef }) => {
   const chatHistoryRef = useRef(null);
   const textareaRef = useRef(null);
 
-  const [history, setHistory] = useState([
-    { role: "server", message: "Hi, I'm AI chatbot. How can I help you?" },
-  ]);
+  const initialHistory = [
+    {
+      role: "server",
+      isLoading: false,
+      message: "Hi, I'm AI chatbot. How can I help you?",
+    },
+  ];
+  const [history, setHistory] = useState(initialHistory);
   const [open, setOpen] = useState(true);
 
-  const updateHistory = useCallback((role, message) => {
+  //history에 새로운 기록을 추가합니다.
+  const addHistory = useCallback((role, message) => {
     if (role !== "user" && role !== "server") {
       console.log("role is not user or server");
       return;
@@ -33,25 +39,40 @@ const AiChat = ({ webSocketRef }) => {
       console.log("message is not string");
       return;
     }
+    //새로운 기록을 추가합니다. 서버의 경우 로딩 여부도 추가합니다.
     const record = {
       role: role,
+      isLoading: role === "server",
       message: message,
     };
     setHistory((prev) => [...prev, record]);
   }, []);
 
+  const updateLastServerMessage = useCallback((message) => {
+    setHistory((prev) => {
+      const lastRecord = prev[prev.length - 1];
+      if (lastRecord.role === "server") {
+        lastRecord.isLoading = false;
+        lastRecord.message = message;
+      }
+      return [...prev];
+    });
+  }, []);
+
+  //서버로 메세지를 전송하고 응답을 받습니다. updateHistory를 이용해 기록도 추가합니다.
   const sendMessage = useCallback(
     (message) => {
-      updateHistory("user", message);
+      addHistory("user", message);
       textareaRef.current.value = "";
+      addHistory("server", "");
       webSocketRef.current.emit("clientMessage", message, (response) => {
-        console.log("server Message:", response);
-        updateHistory("server", response);
+        updateLastServerMessage(response);
       });
     },
-    [webSocketRef, updateHistory]
+    [webSocketRef, addHistory]
   );
 
+  //history가 변경될 때마다 스크롤을 맨 아래로 내립니다.
   useEffect(() => {
     const chatContainer = chatHistoryRef.current;
     if (chatContainer) {
@@ -117,6 +138,7 @@ const AiChat = ({ webSocketRef }) => {
                               return (
                                 <ServerMessage
                                   key={index}
+                                  isLoading={record.isLoading}
                                   message={record.message}
                                 />
                               );
