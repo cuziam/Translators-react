@@ -1,11 +1,15 @@
 import { useContext } from "react";
-import { SourceContext, ResultContext, TranslateContext } from "./Context";
-
-import HistoryModal from "./history/HistoryModal";
+import {
+  SourceContext,
+  ResultContext,
+  TranslateContext,
+  AppContext,
+} from "./Context";
 
 function Tools() {
   //상위 컴포넌트가 SourceContext.Provider인 경우와 ResultContext.Provider인 경우를 구분하여 Context를 가져온다.
-  const { updateShouldModalOpen } = useContext(TranslateContext);
+  const { updateShouldHistoryOpen } = useContext(TranslateContext);
+  const { updateShouldAiChatOpen } = useContext(AppContext);
   let context;
   if (useContext(SourceContext) !== undefined) {
     context = useContext(SourceContext);
@@ -39,7 +43,7 @@ function Tools() {
             xmlns="http://www.w3.org/2000/svg"
             className="group w-6 h-6"
             onClick={() => {
-              updateShouldModalOpen(true);
+              updateShouldHistoryOpen(true);
             }}
           >
             <path
@@ -49,6 +53,30 @@ function Tools() {
               className="group-hover:fill-primary"
             />
           </svg>{" "}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 2406 2406"
+            className="group w-6 h-6"
+            onClick={() => {
+              updateShouldAiChatOpen(true);
+            }}
+          >
+            <path
+              d="M1 578.4C1 259.5 259.5 1 578.4 1h1249.1c319 0 577.5 258.5 577.5 577.4V2406H578.4C259.5 2406 1 2147.5 1 1828.6V578.4z"
+              fill="#74aa9c"
+            />
+            <path
+              id="a"
+              d="M1107.3 299.1c-197.999 0-373.9 127.3-435.2 315.3L650 743.5v427.9c0 21.4 11 40.4 29.4 51.4l344.5 198.515V833.3h.1v-27.9L1372.7 604c33.715-19.52 70.44-32.857 108.47-39.828L1447.6 450.3C1361 353.5 1237.1 298.5 1107.3 299.1zm0 117.5-.6.6c79.699 0 156.3 27.5 217.6 78.4-2.5 1.2-7.4 4.3-11 6.1L952.8 709.3c-18.4 10.4-29.4 30-29.4 51.4V1248l-155.1-89.4V755.8c-.1-187.099 151.601-338.9 339-339.2z"
+              fill="#fff"
+            />
+            <use xlinkHref="#a" transform="rotate(60 1203 1203)" />
+            <use xlinkHref="#a" transform="rotate(120 1203 1203)" />
+            <use xlinkHref="#a" transform="rotate(180 1203 1203)" />
+            <use xlinkHref="#a" transform="rotate(240 1203 1203)" />
+            <use xlinkHref="#a" transform="rotate(300 1203 1203)" />
+          </svg>
         </>
       ) : (
         <></>

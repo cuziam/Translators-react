@@ -4,9 +4,11 @@ export const ResultContext = React.createContext();
 export const SourceContext = React.createContext();
 export const ResultsContext = React.createContext();
 export const TranslateContext = React.createContext();
+export const AppContext = React.createContext();
 export default {
   ResultContext,
   SourceContext,
   ResultsContext,
   TranslateContext,
+  AppContext,
 };

@@ -1,12 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 //user-defined components
 import Header from "./components/head/Header";
 import Translate from "./components/main/Translate";
 import AiChat from "./components/main/ai/AiChat";
+import { AppContext } from "./components/main/Context";
 
 function App() {
   const webSocketRef = useRef(null);
+  const [shouldAiChatOpen, setShouldAiChatOpen] = useState(false);
+
+  const updateShouldAiChatOpen = (value) => {
+    setShouldAiChatOpen(value);
+  };
 
   useEffect(() => {
     // webSocketRef.current가 null이거나 연결되지 않았다면 새로 연결
@@ -34,9 +40,15 @@ function App() {
   return (
     <>
       <div>
-        <Header />
-        <Translate webSocketRef={webSocketRef} />
-        <AiChat webSocketRef={webSocketRef} />
+        <Header />{" "}
+        <AppContext.Provider value={{ updateShouldAiChatOpen }}>
+          <Translate webSocketRef={webSocketRef} />
+        </AppContext.Provider>
+        <AiChat
+          webSocketRef={webSocketRef}
+          shouldAiChatOpen={shouldAiChatOpen}
+          updateShouldAiChatOpen={updateShouldAiChatOpen}
+        />
       </div>
     </>
   );

@@ -5,10 +5,11 @@ import React, {
   useRef,
   Fragment,
 } from "react";
+import { ReactDOM } from "react-dom";
 import ClientMessage from "./ClientMessage";
 import ServerMessage from "./ServerMessage";
 import { Dialog, Transition } from "@headlessui/react";
-const AiChat = ({ webSocketRef }) => {
+const AiChat = ({ webSocketRef, shouldAiChatOpen, updateShouldAiChatOpen }) => {
   /**
    * 상위컴포넌트가 전달한 webSocketRef를 이용하여 서버로 메시지를 전송합니다.
    * 서버로 전송할 메세지는 문자열이어야 하며 clientMessage라는 이벤트명으로 전송합니다.
@@ -27,7 +28,6 @@ const AiChat = ({ webSocketRef }) => {
     },
   ];
   const [history, setHistory] = useState(initialHistory);
-  const [open, setOpen] = useState(true);
 
   //history에 새로운 기록을 추가합니다.
   const addHistory = useCallback((role, message) => {
@@ -81,7 +81,7 @@ const AiChat = ({ webSocketRef }) => {
   }, [history]);
 
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition.Root show={shouldAiChatOpen} as={Fragment}>
       <Dialog
         as="div"
         className="relative z-10"
@@ -169,7 +169,7 @@ const AiChat = ({ webSocketRef }) => {
                     type="button"
                     className="cancel inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                     onClick={() => {
-                      setOpen(false);
+                      updateShouldAiChatOpen(false);
                     }}
                     ref={cancelButtonRef}
                   >

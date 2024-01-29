@@ -106,7 +106,7 @@ export default function Translate({ webSocketRef }) {
   const [sourceConfig, setSourceConfig] = useState(initialSourceConfig);
   const [resultsConfig, setResultsConfig] = useState(initialResultsConfig);
   const [shouldTranslate, setShouldTranslate] = useState(false);
-  const [shouldModalOpen, setShouldModalOpen] = useState(false);
+  const [shouldHistoryOpen, setShouldHistoryOpen] = useState(false);
 
   //refs
   const history = useRef([]);
@@ -132,8 +132,8 @@ export default function Translate({ webSocketRef }) {
     setShouldTranslate(value);
   }, []);
 
-  const updateShouldModalOpen = useCallback((value) => {
-    setShouldModalOpen(value);
+  const updateShouldHistoryOpen = useCallback((value) => {
+    setShouldHistoryOpen(value);
   }, []);
 
   //translate
@@ -188,8 +188,8 @@ export default function Translate({ webSocketRef }) {
   return (
     <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto mb-52">
       <HistoryModal
-        shouldModalOpen={shouldModalOpen}
-        updateShouldModalOpen={updateShouldModalOpen}
+        shouldHistoryOpen={shouldHistoryOpen}
+        updateShouldHistoryOpen={updateShouldHistoryOpen}
         historyRef={history}
       />
       <TranslateContext.Provider
@@ -198,7 +198,7 @@ export default function Translate({ webSocketRef }) {
           sourceConfig,
           updateSourceConfig,
           updateShouldTranslate,
-          updateShouldModalOpen,
+          updateShouldHistoryOpen,
         }}
       >
         <TranslateSource />
