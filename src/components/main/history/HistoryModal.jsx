@@ -8,8 +8,6 @@ export default function HistoryModal({
   updateShouldHistoryOpen,
   historyRef,
 }) {
-  const [open, setOpen] = useState(true);
-
   const cancelButtonRef = useRef(null);
 
   return (
