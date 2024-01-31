@@ -28,6 +28,7 @@ const AiChat = ({ webSocketRef, shouldAiChatOpen, updateShouldAiChatOpen }) => {
     },
   ];
   const [history, setHistory] = useState(initialHistory);
+  const [isWaiting, setIsWaiting] = useState(false);
 
   //history에 새로운 기록을 추가합니다.
   const addHistory = useCallback((role, message) => {
@@ -61,15 +62,18 @@ const AiChat = ({ webSocketRef, shouldAiChatOpen, updateShouldAiChatOpen }) => {
 
   //서버로 메세지를 전송하고 응답을 받습니다. updateHistory를 이용해 기록도 추가합니다.
   const sendMessage = useCallback(
-    (message) => {
+    async (message) => {
+      setIsWaiting(true);
       addHistory("user", message);
       textareaRef.current.value = "";
       addHistory("server", "");
+
       webSocketRef.current.emit("clientMessage", message, (response) => {
         updateLastServerMessage(response);
+        setIsWaiting(false);
       });
     },
-    [webSocketRef, addHistory]
+    [webSocketRef, addHistory, updateLastServerMessage]
   );
 
   //history가 변경될 때마다 스크롤을 맨 아래로 내립니다.
@@ -150,10 +154,24 @@ const AiChat = ({ webSocketRef, shouldAiChatOpen, updateShouldAiChatOpen }) => {
                             ref={textareaRef}
                             className="w-full font-sans py-2 px-3 rounded-xl focus:ring-primary focus:border-primary text-base"
                             placeholder="type your message here..."
+                            required={true}
+                            maxLength={600}
                           />
                           <button
                             className="send w-6 h-6 rounded-xl bg-primary"
                             onClick={() => {
+                              //유효성 검사
+                              // 응답을 기다리는 중인지 확인
+                              if (isWaiting) {
+                                alert("Please wait for the response.");
+                                return;
+                              }
+                              // textarea이 비어있는 지 확인
+                              const message = textareaRef.current.value.trim();
+                              if (!message) {
+                                alert("Please enter a message.");
+                                return;
+                              }
                               sendMessage(textareaRef.current.value);
                             }}
                           >

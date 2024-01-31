@@ -35,7 +35,7 @@ const SourceEditarea = forwardRef(function SourceEditarea(props, ref) {
         className="SourceEditarea w-80 h-36 p-2 bg-background border-2 border-black border-opacity-5 text-sans text-base overflow-auto 
       resize-none focus:ring-0 focus:outline-none focus:border-primary"
         placeholder="Please enter what you want to translate..."
-        maxLength={1000}
+        maxLengt={1000}
         onChange={(e) => {
           onChangeHandler(e);
         }}

@@ -12,9 +12,7 @@ function Toggle() {
         checked={isPower}
         onChange={() => updateResultConfig("isPower", !isPower)}
         className={`${
-          isPower
-            ? "bg-primary  hover:bg-dangerGray"
-            : "bg-danger hover:bg-primaryGray"
+          isPower ? "bg-primary" : "bg-danger"
         } relative inline-flex h-4 w-9 items-center rounded-full`}
       >
         <span className="sr-only">Enable notifications</span>
