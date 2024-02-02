@@ -89,7 +89,7 @@ const translateText = async (sourceConfig, resultsConfig) => {
   try {
     const response = await axios({
       method: "post",
-      url: "https://translators24.com/translate",
+      url: "http://localhost:4788/translate",
       data: dataToSend,
     });
     console.log("translate response: ", response);

@@ -4,7 +4,7 @@ module.exports = {
   darkMode: "media",
   content: [
     "./index.html",
-    "./src/**/*.{html,jsx,js,ts,tsx}",
+    "./src/client/**/*.{html,jsx,js,ts,tsx}",
     "./node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}",
   ],
   plugins: [require("flowbite/plugin")],

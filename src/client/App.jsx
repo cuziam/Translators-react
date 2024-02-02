@@ -17,7 +17,7 @@ function App() {
   useEffect(() => {
     // webSocketRef.current가 null이거나 연결되지 않았다면 새로 연결
     if (!webSocketRef.current || !webSocketRef.current.connected) {
-      webSocketRef.current = io("https://translators24.com");
+      webSocketRef.current = io("http://localhost:4788");
 
       webSocketRef.current.on("connect", () => {
         console.log("서버에 연결되었습니다.");
