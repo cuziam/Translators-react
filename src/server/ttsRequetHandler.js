@@ -31,7 +31,7 @@ async function handleTtsRequest(socket) {
       await fs.promises.writeFile(speechFilePath, buffer); //파일 저장
       console.log("TTS 파일을 생성하였습니다.");
       //클라이언트에게 파일 URL 전송
-      const fileUrl = `${process.env.APP_URL}/voices/${fileName}`;
+      const fileUrl = `${process.env.APP_URL}/voices/${fileName}`; //서버 유알엘이 로컬호스트가 아닌 실제 서버 주소로 변경되어야함
       callback(fileUrl);
     } catch (err) {
       console.error(err);

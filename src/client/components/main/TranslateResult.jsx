@@ -28,7 +28,10 @@ function TranslateResult({ index }) {
       (response) => {
         //응답이 오면 음성 재생
         //response타입이 url인지 확인
-        if (typeof response === "string" && response.startsWith("http")) {
+        if (
+          typeof response === "string" &&
+          response.startsWith(`${import.meta.env.VITE_APP_URL}`)
+        ) {
           try {
             const audio = new Audio(response);
             audio.play();
