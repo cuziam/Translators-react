@@ -89,7 +89,7 @@ const translateText = async (sourceConfig, resultsConfig) => {
   try {
     const response = await axios({
       method: "post",
-      url: "http://localhost:4788/translate",
+      url: `${import.meta.env.VITE_APP_URL}/translate`,
       data: dataToSend,
     });
     console.log("translate response: ", response);
