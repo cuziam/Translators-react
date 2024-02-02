@@ -8,6 +8,7 @@ import SourceToolbar from "./SourceToolbar";
 
 import propTypes from "prop-types";
 
+//legacy code
 class undoRedoHistory {
   constructor() {
     this.undoHistory = [];
@@ -36,7 +37,7 @@ class undoRedoHistory {
 
 function TranslateSource() {
   //context
-  const { updateSourceConfig } = useContext(TranslateContext);
+  const { updateSourceConfig, webSocketRef } = useContext(TranslateContext);
 
   //util functions
   const editareaRef = useRef(null);
@@ -47,6 +48,27 @@ function TranslateSource() {
     alert("Copied!");
   }, []);
 
+  const sendTtsRequest = useCallback(() => {
+    webSocketRef.current.emit(
+      "ttsRequest",
+      editareaRef.current.value,
+      (response) => {
+        //응답이 오면 음성 재생
+        //response타입이 url인지 확인
+        if (typeof response === "string" && response.startsWith("http")) {
+          try {
+            const audio = new Audio(response);
+            audio.play();
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          alert("server error: TTSError");
+        }
+      }
+    );
+  }, [webSocketRef, editareaRef]);
+
   const updateSourceText = useCallback(() => {
     const text = editareaRef.current.value;
     console.log("updateSourceText:", text);
@@ -56,7 +78,9 @@ function TranslateSource() {
   //render
   return (
     <div className="Translatesource w-80 flex-col justify-center items-start flex relative">
-      <SourceContext.Provider value={{ copyText, updateSourceText }}>
+      <SourceContext.Provider
+        value={{ copyText, updateSourceText, sendTtsRequest }}
+      >
         <SourceBar />
         <SourceEditarea ref={editareaRef} />
         <SourceToolbar />

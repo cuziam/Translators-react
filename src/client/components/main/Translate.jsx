@@ -199,6 +199,7 @@ export default function Translate({ webSocketRef }) {
           updateSourceConfig,
           updateShouldTranslate,
           updateShouldHistoryOpen,
+          webSocketRef,
         }}
       >
         <TranslateSource />
@@ -208,6 +209,7 @@ export default function Translate({ webSocketRef }) {
         value={{
           resultsConfig,
           updateResultsConfig,
+          webSocketRef,
         }}
       >
         <TranslateResults />

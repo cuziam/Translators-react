@@ -1,5 +1,6 @@
 // built-in modules
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
@@ -19,7 +20,6 @@ const io = new Server(server, {
     origin: "*",
   },
 });
-
 // cookie parser
 import cookieParser from "cookie-parser";
 
@@ -30,11 +30,8 @@ dotenv.config();
 import { translateClientReq } from "./src/server/translate.js";
 import { sessionMiddleware as sessionHandler } from "./src/server/sessionhandler.js";
 import { errorController as errorHandler } from "./src/server/errorhandler.js";
-import {
-  handleClientMessage,
-  userHistories,
-} from "./src/server/clientMessageHandler.js";
-
+import { handleClientMessage } from "./src/server/clientMessageHandler.js";
+import { handleTtsRequest } from "./src/server/ttsRequetHandler.js";
 //PORT
 const PORT = process.env.PORT;
 
@@ -59,6 +56,7 @@ io.on("connection", (socket) => {
   socket.on("connectAiChat", () => {
     console.log("클라이언트가 AI 챗봇에 연결하였습니다");
     handleClientMessage(socket);
+    handleTtsRequest(socket);
   });
   // 연결이 끊어졌을 때
   socket.on("disconnect", () => {
@@ -81,6 +79,42 @@ app.post("/translate", async (req, res) => {
     console.log(error);
     res.status(500).send("Internal server error");
   }
+});
+
+app.get("/voices/:fileName", async (req, res) => {
+  const { fileName } = req.params;
+  const filePath = path.resolve(`./src/server/voices/${fileName}`);
+
+  //악의적인 파일 경로나 유효하지 않은 파일명을 요청한 경우 400 에러를 전송합니다.
+  if (
+    !fileName.match(
+      /^speech-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\.opus$/
+    )
+  ) {
+    res.status(400).send("invalid file name");
+    return;
+  }
+
+  //파일이 존재하지 않는 경우 404 에러를 전송합니다.
+  if (!fs.existsSync(filePath)) {
+    res.status(404).send("unable to find the voice file.");
+    return;
+  }
+
+  res.status(200).sendFile(filePath, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    // 파일 전송이 성공적으로 완료된 후 삭제를 시도합니다.
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File is deleted successfully.");
+      }
+    });
+  });
 });
 
 app.get("/healthcheck", (req, res) => {
