@@ -88,7 +88,7 @@ app.get("/voices/:fileName", async (req, res) => {
   //악의적인 파일 경로나 유효하지 않은 파일명을 요청한 경우 400 에러를 전송합니다.
   if (
     !fileName.match(
-      /^speech-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\.opus$/
+      /^speech-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\.aac$/
     )
   ) {
     res.status(400).send("invalid file name");

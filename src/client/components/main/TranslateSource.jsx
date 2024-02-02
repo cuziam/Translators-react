@@ -61,6 +61,8 @@ function TranslateSource() {
         ) {
           try {
             const audio = new Audio(response);
+            //solving autoplay problem
+            audio.volume = 1;
             audio.play();
           } catch (error) {
             console.log(error);

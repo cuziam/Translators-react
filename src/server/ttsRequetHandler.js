@@ -21,12 +21,12 @@ async function handleTtsRequest(socket) {
       const opus = await openai.audio.speech.create({
         model: "tts-1",
         voice: "nova",
-        response_format: "opus",
+        response_format: "aac",
         input: message,
       });
 
       const buffer = Buffer.from(await opus.arrayBuffer());
-      const fileName = `speech-${randomUUID()}.opus`; //고유한 파일명 생성
+      const fileName = `speech-${randomUUID()}.aac`; //고유한 파일명 생성
       const speechFilePath = path.resolve(`./src/server/voices/${fileName}`);
       await fs.promises.writeFile(speechFilePath, buffer); //파일 저장
       console.log("TTS 파일을 생성하였습니다.");
