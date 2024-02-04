@@ -26,7 +26,7 @@ const SourceEditarea = forwardRef(function SourceEditarea(props, ref) {
 
       return () => clearTimeout(debounce);
     }
-  }, [currentLength, updateSourceText, updateShouldTranslate]);
+  }, [currentLength]); //여기서 updateSourceText와 updateShouldTranslate는 의존성 배열에 추가되지 않았습니다.
 
   return (
     <>

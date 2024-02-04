@@ -37,7 +37,8 @@ class undoRedoHistory {
 
 function TranslateSource() {
   //context
-  const { updateSourceConfig, webSocketRef } = useContext(TranslateContext);
+  const { updateSourceConfig, webSocketRef, sourceConfig } =
+    useContext(TranslateContext);
 
   //util functions
   const editareaRef = useRef(null);
@@ -78,7 +79,7 @@ function TranslateSource() {
     const text = editareaRef.current.value;
     console.log("updateSourceText:", text);
     updateSourceConfig("sourceText", text);
-  }, []);
+  }, [sourceConfig, updateSourceConfig, editareaRef]);
 
   //render
   return (

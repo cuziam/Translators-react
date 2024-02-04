@@ -153,7 +153,6 @@ export default function Translate({ webSocketRef }) {
       });
     }
   }, [
-    sourceConfig.sourceText,
     shouldTranslate,
     translate,
     updateShouldTranslate,
