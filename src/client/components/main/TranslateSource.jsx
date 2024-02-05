@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { useEffect, useContext } from "react";
 import { SourceContext, TranslateContext } from "./Context";
+import axios from "axios";
 
 import SourceBar from "./SourceBar";
 import SourceEditarea from "./SourceEditarea";
@@ -42,6 +43,8 @@ function TranslateSource() {
 
   //util functions
   const editareaRef = useRef(null);
+  const audioContextRef = useRef(null);
+
   const copyText = useCallback(() => {
     console.log(editareaRef.current);
     const text = editareaRef.current.value;
@@ -54,26 +57,37 @@ function TranslateSource() {
       "ttsRequest",
       editareaRef.current.value,
       (response) => {
-        //응답이 오면 음성 재생
+        //audioContext가 생성되어 있지 않으면 생성
+        if (audioContextRef.current === null) {
+          audioContextRef.current = new (window.AudioContext ||
+            window.webkitAudioContext)();
+        }
+
         //response타입이 url인지 확인
         if (
           typeof response === "string" &&
           response.startsWith(`${import.meta.env.VITE_APP_URL}`)
         ) {
-          try {
-            const audio = new Audio(response);
-            //solving autoplay problem
-            audio.volume = 1;
-            audio.play();
-          } catch (error) {
-            console.log(error);
-          }
+          // 오디오 파일 로드 및 재생
+          axios
+            .get(response, { responseType: "arraybuffer" })
+            .then((response) => {
+              // audioContext는 이 컴포넌트 내에서 미리 생성되어 있어야 합니다.
+              return audioContextRef.current.decodeAudioData(response.data);
+            })
+            .then((audioBuffer) => {
+              const source = audioContextRef.current.createBufferSource();
+              source.buffer = audioBuffer;
+              source.connect(audioContextRef.current.destination);
+              source.start();
+            })
+            .catch((error) => console.log(error));
         } else {
-          alert("server error: TTSError");
+          alert(response);
         }
       }
     );
-  }, [webSocketRef, editareaRef]);
+  }, [webSocketRef, editareaRef, audioContextRef]);
 
   const updateSourceText = useCallback(() => {
     const text = editareaRef.current.value;

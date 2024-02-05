@@ -1,4 +1,5 @@
 import { useContext, useCallback, useRef } from "react";
+import axios from "axios";
 
 //user-defined components
 import TargetBar from "./TargetBar";
@@ -14,6 +15,8 @@ function TranslateResult({ index }) {
 
   //util functions
   const textareaRef = useRef(null);
+  const audioContextRef = useRef(null);
+
   const copyText = () => {
     console.log(textareaRef.current);
     const text = textareaRef.current.innerText;
@@ -26,24 +29,37 @@ function TranslateResult({ index }) {
       "ttsRequest",
       textareaRef.current.innerText,
       (response) => {
-        //응답이 오면 음성 재생
+        //audioContext가 생성되어 있지 않으면 생성
+        if (audioContextRef.current === null) {
+          audioContextRef.current = new (window.AudioContext ||
+            window.webkitAudioContext)();
+        }
+
         //response타입이 url인지 확인
         if (
           typeof response === "string" &&
           response.startsWith(`${import.meta.env.VITE_APP_URL}`)
         ) {
-          try {
-            const audio = new Audio(response);
-            audio.play();
-          } catch (error) {
-            console.log(error);
-          }
+          // 오디오 파일 로드 및 재생
+          axios
+            .get(response, { responseType: "arraybuffer" })
+            .then((response) => {
+              // audioContext는 이 컴포넌트 내에서 미리 생성되어 있어야 합니다.
+              return audioContextRef.current.decodeAudioData(response.data);
+            })
+            .then((audioBuffer) => {
+              const source = audioContextRef.current.createBufferSource();
+              source.buffer = audioBuffer;
+              source.connect(audioContextRef.current.destination);
+              source.start();
+            })
+            .catch((error) => console.log(error));
         } else {
-          alert("server error: TTSError");
+          alert(response);
         }
       }
     );
-  }, [webSocketRef, textareaRef]);
+  }, [webSocketRef, textareaRef, audioContextRef]);
 
   //define resultConfig and updateResultConfig
   const resultConfig = resultsConfig[index];

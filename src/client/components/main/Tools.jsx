@@ -39,22 +39,7 @@ function Tools() {
         className="voice w-6 h-6 fill-icon active:fill-primary"
         version="1.0"
         viewBox="0 0 75 75"
-        onClick={() => {
-          // 음성 재생 권한을 활성화
-          const audio = new Audio(); // 빈 오디오 객체 생성
-          audio.volume = 0; // 볼륨을 0으로 설정
-          audio
-            .play() // 오디오 재생을 시도하여 오디오 재생 권한을 활성화
-            .then(() => {
-              // 초기화 성공
-              console.log("Audio initialized");
-            })
-            .catch((error) => {
-              // 초기화 실패
-              console.error("Audio initialization failed:", error);
-            });
-          context.sendTtsRequest();
-        }}
+        onClick={context.sendTtsRequest} //audio autoplay를 위해 context.sendTtsRequest를 직접 이벤트 핸들러로 사용
       >
         <path d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z" />
         <path d="M48,27.6a19.5,19.5 0 0 1 0,21.4M55.1,20.5a30,30 0 0 1 0,35.6M61.6,14a38.8,38.8 0 0 1 0,48.6" />
