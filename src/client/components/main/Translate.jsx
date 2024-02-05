@@ -87,12 +87,7 @@ const translateText = async (sourceConfig, resultsConfig) => {
   console.log("dataToSend:", dataToSend);
   //send data and get response
   try {
-    const response = await axios({
-      method: "post",
-      url: `${import.meta.env.VITE_APP_URL}/translate`,
-      data: dataToSend,
-    });
-    console.log("translate response: ", response);
+    webSocketRef.current.emit("translate", dataToSend);
   } catch (error) {
     console.log(error);
   }
@@ -138,8 +133,38 @@ export default function Translate({ webSocketRef }) {
 
   //translate
   const translate = useCallback(async () => {
-    translateText(sourceConfig, resultsConfig);
-  }, [sourceConfig, resultsConfig]);
+    console.log(
+      "translateText start... current Config:",
+      sourceConfig,
+      resultsConfig
+    );
+
+    //get data to send
+    const { sourceLang, sourceText } = sourceConfig;
+    const dataToSend = [];
+    resultsConfig.forEach((resultConfig, index) => {
+      if (resultConfig.isPower === true) {
+        const { targetLang, targetTool } = resultConfig;
+        dataToSend.push({
+          index: index,
+          srcLang: sourceLang,
+          srcText: sourceText,
+          targetLang: targetLang,
+          targetTool: targetTool,
+        });
+      }
+    });
+
+    console.log("dataToSend:", dataToSend);
+    //send data and get response
+    try {
+      webSocketRef.current.emit("translate", dataToSend, (data) => {
+        console.log("server message: ", data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [sourceConfig, resultsConfig, webSocketRef]);
 
   //번역 요청 및 로딩 처리
   useEffect(() => {

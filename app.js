@@ -27,11 +27,11 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
 
-import { translateClientReq } from "./src/server/translate.js";
 import { sessionMiddleware as sessionHandler } from "./src/server/sessionhandler.js";
 import { errorController as errorHandler } from "./src/server/errorhandler.js";
 import { handleClientMessage } from "./src/server/clientMessageHandler.js";
 import { handleTtsRequest } from "./src/server/ttsRequetHandler.js";
+import { handleTranslate } from "./src/server/translateHandler.js";
 //PORT
 const PORT = process.env.PORT;
 
@@ -57,6 +57,7 @@ io.on("connection", (socket) => {
     console.log("클라이언트가 AI 챗봇에 연결하였습니다");
     handleClientMessage(socket);
     handleTtsRequest(socket);
+    handleTranslate(socket);
   });
   // 연결이 끊어졌을 때
   socket.on("disconnect", () => {
@@ -68,17 +69,6 @@ io.on("connection", (socket) => {
 app.get("/", (req, res) => {
   //index.html 보내기
   res.sendFile("index.html");
-});
-
-app.post("/translate", async (req, res) => {
-  const data = req.body;
-  try {
-    const results = await translateClientReq(data, io);
-    res.status(200).send("translation complete");
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error");
-  }
 });
 
 app.get("/voices/:fileName", async (req, res) => {
