@@ -52,6 +52,7 @@ function Tools() {
             className="group w-6 h-6 fill-icon"
             version="1.1"
             viewBox="0 0 14 21"
+            onClick={context.transcript}
           >
             <title />
             <desc />

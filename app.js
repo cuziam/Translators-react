@@ -32,6 +32,7 @@ import { errorController as errorHandler } from "./src/server/errorhandler.js";
 import { handleClientMessage } from "./src/server/clientMessageHandler.js";
 import { handleTtsRequest } from "./src/server/ttsRequetHandler.js";
 import { handleTranslate } from "./src/server/translateHandler.js";
+import { handleTranscript } from "./src/server/transcriptionHandler.js";
 //PORT
 const PORT = process.env.PORT;
 
@@ -58,6 +59,7 @@ io.on("connection", (socket) => {
     handleClientMessage(socket);
     handleTtsRequest(socket);
     handleTranslate(socket);
+    handleTranscript(socket);
   });
   // 연결이 끊어졌을 때
   socket.on("disconnect", () => {

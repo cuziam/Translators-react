@@ -1,8 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { terser } from "rollup-plugin-terser"; // terser 임포트
+import copy from "rollup-plugin-copy";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
@@ -13,4 +13,7 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {},
+  },
 });

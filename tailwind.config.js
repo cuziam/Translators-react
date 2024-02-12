@@ -9,6 +9,27 @@ module.exports = {
   ],
   plugins: [require("flowbite/plugin")],
   theme: {
+    extend: {
+      animation: {
+        wave: "wave 10s infinite linear",
+      },
+      keyframes: {
+        wave: {
+          "0%, 100%": {
+            transform: "translateY(0%)",
+          },
+          "25%": {
+            transform: "translateY(-5%)",
+          },
+          "50%": {
+            transform: "translateY(0%)",
+          },
+          "75%": {
+            transform: "translateY(5%)",
+          },
+        },
+      },
+    },
     colors: {
       primary: "#38c876",
       primaryGray: "#CCF5DF",
