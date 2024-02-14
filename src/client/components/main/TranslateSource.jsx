@@ -81,7 +81,7 @@ function TranslateSource() {
       mediaRecorder.start();
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+        const audioBlob = new Blob(audioChunks, { type: "audio/m4a" });
         const audioArrayBuffer = await audioBlob.arrayBuffer();
         webSocketRef.current.emit(
           "transcript",
