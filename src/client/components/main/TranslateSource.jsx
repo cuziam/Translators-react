@@ -78,7 +78,7 @@ function TranslateSource() {
         }
       };
 
-      mediaRecorder.start();
+      mediaRecorder.start(500);
 
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
