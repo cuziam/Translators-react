@@ -25,6 +25,7 @@ function Tools() {
         className="copy group w-6 h-6 fill-icon"
         onClick={() => context.copyText()}
       >
+        <title>Copy</title>
         <g id="icon-copy">
           <path
             id="Vector"
@@ -41,43 +42,83 @@ function Tools() {
         viewBox="0 0 75 75"
         onClick={context.sendTtsRequest} //audio autoplay를 위해 context.sendTtsRequest를 직접 이벤트 핸들러로 사용
       >
+        <title>Text to Speech</title>
         <path d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z" />
         <path d="M48,27.6a19.5,19.5 0 0 1 0,21.4M55.1,20.5a30,30 0 0 1 0,35.6M61.6,14a38.8,38.8 0 0 1 0,48.6" />
       </svg>
       {context === useContext(SourceContext) ? (
         <>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-            className="group w-6 h-6 fill-icon"
-            version="1.1"
-            viewBox="0 0 14 21"
-            onClick={context.transcript}
-          >
-            <title />
-            <desc />
-            <defs />
-            <g
-              fill="none"
-              fillRule="evenodd"
-              id="Page-1"
-              stroke="none"
-              strokeWidth="1"
+          {context.isRecording ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+              className="group w-6 h-6 rounded-full ring-2 ring-primary animate-pulse"
+              version="1.1"
+              viewBox="0 0 14 21"
+              onClick={() => {
+                context.setIsRecording(false);
+              }}
             >
+              <title>Speech to text</title>
+              <desc />
+              <defs />
               <g
-                className="fill-icon group-active:fill-primary"
-                id="Icons-AV"
-                transform="translate(-3.000000, -43.000000)"
+                fill="none"
+                fillRule="evenodd"
+                id="Page-1"
+                stroke="none"
+                strokeWidth="1"
               >
-                <g id="mic" transform="translate(3.000000, 43.500000)">
-                  <path
-                    d="M7,12 C8.7,12 10,10.7 10,9 L10,3 C10,1.3 8.7,0 7,0 C5.3,0 4,1.3 4,3 L4,9 C4,10.7 5.3,12 7,12 L7,12 Z M12.3,9 C12.3,12 9.8,14.1 7,14.1 C4.2,14.1 1.7,12 1.7,9 L0,9 C0,12.4 2.7,15.2 6,15.7 L6,19 L8,19 L8,15.7 C11.3,15.2 14,12.4 14,9 L12.3,9 L12.3,9 Z"
-                    id="Shape"
-                  />
+                <g
+                  className="fill-red-500 group-active:fill-icon"
+                  id="Icons-AV"
+                  transform="translate(-3.000000, -43.000000)"
+                >
+                  <g id="mic" transform="translate(3.000000, 43.500000)">
+                    <path
+                      d="M7,12 C8.7,12 10,10.7 10,9 L10,3 C10,1.3 8.7,0 7,0 C5.3,0 4,1.3 4,3 L4,9 C4,10.7 5.3,12 7,12 L7,12 Z M12.3,9 C12.3,12 9.8,14.1 7,14.1 C4.2,14.1 1.7,12 1.7,9 L0,9 C0,12.4 2.7,15.2 6,15.7 L6,19 L8,19 L8,15.7 C11.3,15.2 14,12.4 14,9 L12.3,9 L12.3,9 Z"
+                      id="Shape"
+                    />
+                  </g>
                 </g>
               </g>
-            </g>
-          </svg>
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+              className="group w-6 h-6 fill-icon rounded-full"
+              version="1.1"
+              viewBox="0 0 14 21"
+              onClick={() => {
+                context.setIsRecording(true);
+              }}
+            >
+              <title>Speech to text</title>
+              <desc />
+              <defs />
+              <g
+                fill="none"
+                fillRule="evenodd"
+                id="Page-1"
+                stroke="none"
+                strokeWidth="1"
+              >
+                <g
+                  className="fill-icon group-active:fill-red-500"
+                  id="Icons-AV"
+                  transform="translate(-3.000000, -43.000000)"
+                >
+                  <g id="mic" transform="translate(3.000000, 43.500000)">
+                    <path
+                      d="M7,12 C8.7,12 10,10.7 10,9 L10,3 C10,1.3 8.7,0 7,0 C5.3,0 4,1.3 4,3 L4,9 C4,10.7 5.3,12 7,12 L7,12 Z M12.3,9 C12.3,12 9.8,14.1 7,14.1 C4.2,14.1 1.7,12 1.7,9 L0,9 C0,12.4 2.7,15.2 6,15.7 L6,19 L8,19 L8,15.7 C11.3,15.2 14,12.4 14,9 L12.3,9 L12.3,9 Z"
+                      id="Shape"
+                    />
+                  </g>
+                </g>
+              </g>
+            </svg>
+          )}
           <svg
             viewBox="0 0 31 30"
             xmlns="http://www.w3.org/2000/svg"
@@ -86,6 +127,7 @@ function Tools() {
               updateShouldHistoryOpen(true);
             }}
           >
+            <title>History</title>
             <path
               id="history"
               d="M15.5 30C11.6667 30 8.32639 28.7292 5.47917 26.1875C2.63194 23.6458 1 20.4722 0.583333 16.6667H4C4.38889 19.5556 5.67361 21.9444 7.85417 23.8333C10.0347 25.7222 12.5833 26.6667 15.5 26.6667C18.75 26.6667 21.5069 25.5347 23.7708 23.2708C26.0347 21.0069 27.1667 18.25 27.1667 15C27.1667 11.75 26.0347 8.99306 23.7708 6.72917C21.5069 4.46528 18.75 3.33333 15.5 3.33333C13.5833 3.33333 11.7917 3.77778 10.125 4.66667C8.45833 5.55556 7.05556 6.77778 5.91667 8.33333H10.5V11.6667H0.5V1.66667H3.83333V5.58333C5.25 3.80556 6.97917 2.43056 9.02083 1.45833C11.0625 0.486111 13.2222 0 15.5 0C17.5833 0 19.5347 0.395833 21.3542 1.1875C23.1736 1.97917 24.7569 3.04861 26.1042 4.39583C27.4514 5.74306 28.5208 7.32639 29.3125 9.14583C30.1042 10.9653 30.5 12.9167 30.5 15C30.5 17.0833 30.1042 19.0347 29.3125 20.8542C28.5208 22.6736 27.4514 24.2569 26.1042 25.6042C24.7569 26.9514 23.1736 28.0208 21.3542 28.8125C19.5347 29.6042 17.5833 30 15.5 30ZM20.1667 22L13.8333 15.6667V6.66667H17.1667V14.3333L22.5 19.6667L20.1667 22Z"
@@ -102,6 +144,7 @@ function Tools() {
               updateShouldAiChatOpen(true);
             }}
           >
+            <title>AI Chat</title>
             <path
               d="M1 578.4C1 259.5 259.5 1 578.4 1h1249.1c319 0 577.5 258.5 577.5 577.4V2406H578.4C259.5 2406 1 2147.5 1 1828.6V578.4z"
               fill="#74aa9c"

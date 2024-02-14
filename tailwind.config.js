@@ -11,22 +11,12 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        wave: "wave 10s infinite linear",
+        spin2: "spin 3s ease-in-out infinite",
       },
       keyframes: {
-        wave: {
-          "0%, 100%": {
-            transform: "translateY(0%)",
-          },
-          "25%": {
-            transform: "translateY(-5%)",
-          },
-          "50%": {
-            transform: "translateY(0%)",
-          },
-          "75%": {
-            transform: "translateY(5%)",
-          },
+        spin2: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
         },
       },
     },

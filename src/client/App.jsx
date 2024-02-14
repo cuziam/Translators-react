@@ -4,13 +4,13 @@ import { io } from "socket.io-client";
 import Header from "./components/head/Header";
 import Translate from "./components/main/Translate";
 import AiChat from "./components/main/ai/AiChat";
-import Transcript from "./components/main/transcript/Transcript";
+
 import { AppContext } from "./components/main/Context";
 
 function App() {
   const webSocketRef = useRef(null);
   const [shouldAiChatOpen, setShouldAiChatOpen] = useState(false);
-  const [shouldTranscript, setShouldTranscript] = useState(false);
+
   const updateShouldAiChatOpen = (value) => {
     setShouldAiChatOpen(value);
   };
@@ -50,15 +50,6 @@ function App() {
           shouldAiChatOpen={shouldAiChatOpen}
           updateShouldAiChatOpen={updateShouldAiChatOpen}
         />
-        <div
-          onClick={() => setShouldTranscript(!shouldTranscript)}
-          className="w-6 h-6 bg-secondary"
-        ></div>
-        {shouldTranscript ? (
-          <Transcript webSocketRef={webSocketRef}></Transcript>
-        ) : (
-          <div></div>
-        )}
       </div>
     </>
   );

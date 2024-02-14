@@ -26,13 +26,13 @@ const handleTranscript = async (socket) => {
     console.log(transcription.text);
     callback(transcription.text);
     // 파일 전송이 성공적으로 완료된 후 삭제를 시도합니다.
-    // fs.unlink(filePath, (err) => {
-    //   if (err) {
-    //     console.error("Error deleting file:", err);
-    //   } else {
-    //     console.log("File is deleted successfully.");
-    //   }
-    // });
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      } else {
+        console.log("File is deleted successfully.");
+      }
+    });
   });
 };
 
