@@ -15,7 +15,7 @@ const handleTranscript = async (socket) => {
       callback("Please send a not empty file.");
       return;
     }
-    const fileName = `${randomUUID()}.m4a`;
+    const fileName = `${randomUUID()}.mp3`;
     const filePath = path.resolve(`./src/server/voices/${fileName}`);
     fs.writeFileSync(filePath, Buffer.from(audioArrayBuffer));
 
