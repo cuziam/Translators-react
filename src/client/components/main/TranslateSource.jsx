@@ -135,6 +135,7 @@ function TranslateSource() {
           sendTtsRequest,
           isRecording,
           setIsRecording,
+          updateEditareaValue,
         }}
       >
         <SourceBar />

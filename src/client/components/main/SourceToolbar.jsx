@@ -5,7 +5,6 @@ import { TranslateContext, SourceContext } from "./Context";
 import Tools from "./Tools";
 
 function SourceToolbar() {
-  const { updateSourceText } = useContext(SourceContext);
   const { updateShouldTranslate } = useContext(TranslateContext);
 
   return (
@@ -14,7 +13,6 @@ function SourceToolbar() {
       <div
         className="BtnTranslate flex items-center justify-center w-28 h-9 bg-secondary hover:bg-secondaryGray rounded-br-lg border-2 border-zinc-300 text-white text-sm font-bold cursor-pointer"
         onClick={() => {
-          updateSourceText();
           updateShouldTranslate(true);
         }}
       >

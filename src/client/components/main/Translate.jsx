@@ -124,6 +124,7 @@ export default function Translate({ webSocketRef }) {
   }, []);
 
   const updateShouldTranslate = useCallback((value) => {
+    console.log("updateShouldTranslate:", value);
     setShouldTranslate(value);
   }, []);
 
