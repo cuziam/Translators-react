@@ -14,9 +14,9 @@ function TranslateSource() {
   //context
   const { updateSourceConfig, webSocketRef, updateShouldTranslate } =
     useContext(TranslateContext);
-  const editareaRef = useRef(null);
-  const audioContextRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
+  const editareaRef = useRef<HTMLTextAreaElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null); //audioContextRef를 생성합니다. 자동재생 정책 때문에 초기값은 null입니다.
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   const [isRecording, setIsRecording] = useState(false);
   const [editareaValue, setEditareaValue] = useState("");
@@ -30,39 +30,51 @@ function TranslateSource() {
   }, []);
 
   const sendTtsRequest = useCallback(() => {
-    webSocketRef.current.emit("ttsRequest", editareaValue, (response) => {
-      //audioContext가 생성되어 있지 않으면 생성
-      if (audioContextRef.current === null) {
-        audioContextRef.current = new (window.AudioContext ||
-          window.webkitAudioContext)();
-      }
+    webSocketRef.current.emit(
+      "ttsRequest",
+      editareaValue,
+      (response: string) => {
+        //audioContext가 생성되어 있지 않으면 생성
+        if (audioContextRef.current === null) {
+          audioContextRef.current = new window.AudioContext();
+        }
 
-      //response타입이 url인지 확인
-      if (
-        typeof response === "string" &&
-        response.startsWith(`${import.meta.env.VITE_APP_URL}`)
-      ) {
-        // 오디오 파일 로드 및 재생
-        axios
-          .get(response, { responseType: "arraybuffer" })
-          .then((response) => {
-            // audioContext는 이 컴포넌트 내에서 미리 생성되어 있어야 합니다.
-            return audioContextRef.current.decodeAudioData(response.data);
-          })
-          .then((audioBuffer) => {
-            const source = audioContextRef.current.createBufferSource();
-            source.buffer = audioBuffer;
-            source.connect(audioContextRef.current.destination);
-            source.start();
-          })
-          .catch((error) => console.log(error));
-      } else {
-        alert(response);
+        //response타입이 url인지 확인
+        if (
+          typeof response === "string" &&
+          response.startsWith(`${import.meta.env.VITE_APP_URL}`)
+        ) {
+          // 오디오 파일 로드 및 재생
+          axios
+            .get(response, { responseType: "arraybuffer" })
+            .then((response) => {
+              // audioContext는 이 컴포넌트 내에서 미리 생성되어 있어야 합니다.
+              return audioContextRef.current?.decodeAudioData(response.data);
+            })
+            .then((audioBuffer) => {
+              if (!audioBuffer) {
+                throw new Error("audioBuffer is not created");
+              }
+              if (audioContextRef.current === null) return;
+              const source = audioContextRef.current.createBufferSource();
+
+              if (!source) {
+                throw new Error("source is not created");
+              }
+              source.buffer = audioBuffer;
+
+              source.connect(audioContextRef.current.destination);
+              source.start();
+            })
+            .catch((error) => console.log(error));
+        } else {
+          alert(response);
+        }
       }
-    });
+    );
   }, [webSocketRef, audioContextRef, editareaValue]);
 
-  const updateEditareaValue = useCallback((text) => {
+  const updateEditareaValue = useCallback((text: string) => {
     setEditareaValue(text);
   }, []);
 
@@ -70,7 +82,7 @@ function TranslateSource() {
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder; // 현재 MediaRecorder 인스턴스를 ref에 저장
-      let audioChunks = [];
+      const audioChunks: Blob[] = [];
 
       mediaRecorder.ondataavailable = function (event) {
         if (event.data.size > 0) {
@@ -86,7 +98,7 @@ function TranslateSource() {
         webSocketRef.current.emit(
           "transcript",
           audioArrayBuffer,
-          (response) => {
+          (response: string) => {
             console.log("transcript response:", response);
             updateEditareaValue(response);
           }

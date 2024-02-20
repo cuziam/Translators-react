@@ -5,33 +5,49 @@ import React, {
   useRef,
   Fragment,
 } from "react";
-import { ReactDOM } from "react-dom";
 import ClientMessage from "./ClientMessage";
 import ServerMessage from "./ServerMessage";
 import { Dialog, Transition } from "@headlessui/react";
-const AiChat = ({ webSocketRef, shouldAiChatOpen, updateShouldAiChatOpen }) => {
+
+interface AiChatProps {
+  webSocketRef: React.MutableRefObject<any>;
+  shouldAiChatOpen: boolean;
+  updateShouldAiChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface HistoryRecord {
+  role: "user" | "server";
+  isLoading: boolean;
+  message: string;
+}
+
+const AiChat = ({
+  webSocketRef,
+  shouldAiChatOpen,
+  updateShouldAiChatOpen,
+}: AiChatProps) => {
   /**
    * 상위컴포넌트가 전달한 webSocketRef를 이용하여 서버로 메시지를 전송합니다.
    * 서버로 전송할 메세지는 문자열이어야 하며 clientMessage라는 이벤트명으로 전송합니다.
    * 응답 메세지는 문자열이며 서버에서 serverMessage라는 이벤트를 통해 전달받습니다.
    */
 
-  const cancelButtonRef = useRef(null);
-  const chatHistoryRef = useRef(null);
-  const textareaRef = useRef(null);
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const chatHistoryRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const initialHistory = [
+  const initialHistory: HistoryRecord[] = [
     {
       role: "server",
       isLoading: false,
       message: "Hi, I'm AI chatbot. How can I help you?",
     },
   ];
-  const [history, setHistory] = useState(initialHistory);
-  const [isWaiting, setIsWaiting] = useState(false);
+  const [history, setHistory] = useState<HistoryRecord[]>(initialHistory);
+  const [isWaiting, setIsWaiting] = useState<boolean>(false);
 
   //history에 새로운 기록을 추가합니다.
-  const addHistory = useCallback((role, message) => {
+  const addHistory = useCallback((role: "user" | "server", message: string) => {
     if (role !== "user" && role !== "server") {
       console.log("role is not user or server");
       return;
@@ -49,7 +65,7 @@ const AiChat = ({ webSocketRef, shouldAiChatOpen, updateShouldAiChatOpen }) => {
     setHistory((prev) => [...prev, record]);
   }, []);
 
-  const updateLastServerMessage = useCallback((message) => {
+  const updateLastServerMessage = useCallback((message: string) => {
     setHistory((prev) => {
       const lastRecord = prev[prev.length - 1];
       if (lastRecord.role === "server") {
@@ -62,16 +78,21 @@ const AiChat = ({ webSocketRef, shouldAiChatOpen, updateShouldAiChatOpen }) => {
 
   //서버로 메세지를 전송하고 응답을 받습니다. updateHistory를 이용해 기록도 추가합니다.
   const sendMessage = useCallback(
-    async (message) => {
+    async (message: string) => {
       setIsWaiting(true);
       addHistory("user", message);
+      if (textareaRef.current === null) return;
       textareaRef.current.value = "";
       addHistory("server", "");
 
-      webSocketRef.current.emit("clientMessage", message, (response) => {
-        updateLastServerMessage(response);
-        setIsWaiting(false);
-      });
+      webSocketRef.current.emit(
+        "clientMessage",
+        message,
+        (response: string) => {
+          updateLastServerMessage(response);
+          setIsWaiting(false);
+        }
+      );
     },
     [webSocketRef, addHistory, updateLastServerMessage]
   );
@@ -178,6 +199,7 @@ const AiChat = ({ webSocketRef, shouldAiChatOpen, updateShouldAiChatOpen }) => {
                                   return;
                                 }
                                 // textarea이 비어있는 지 확인
+                                if (!textareaRef.current) return;
                                 const message =
                                   textareaRef.current.value.trim();
                                 if (!message) {

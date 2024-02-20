@@ -12,23 +12,73 @@ import HistoryModal from "./history/HistoryModal";
 
 //data
 import supported from "../../data/supported.json"; //수정 필요: db에서 받아오거나, 코드 내에서 처리할 것
+import { Socket } from "socket.io-client";
 
-const getInitialConfigs = () => {
+interface SourceConfig {
+  sourceLang: string;
+  sourceText: string;
+  supportedLangs: string[];
+  history: HistoryItem[];
+}
+interface HistoryItem {
+  srcText: string;
+  targetText: string;
+}
+
+interface ResultConfig {
+  isPower: boolean;
+  targetLang: string;
+  targetTool: string;
+  targetText: string;
+  supportedTools: string[];
+  supportedLangs: string[];
+  isLoading: boolean;
+}
+type ResultsConfig = ResultConfig[];
+
+interface InitialConfig {
+  initialSourceConfig: SourceConfig;
+  initialResultsConfig: ResultsConfig;
+}
+
+interface DataToSendItem {
+  index: number;
+  srcLang: string;
+  srcText: string;
+  targetLang: string;
+  targetTool: string;
+}
+
+interface dataToReceive {
+  index: number;
+  srcLang: string;
+  srcText: string;
+  targetLang: string;
+  targetText: string;
+  targetTool: string;
+}
+interface TranslateProps {
+  webSocketRef: React.MutableRefObject<Socket>;
+}
+
+const getInitialConfigs = (): InitialConfig => {
   // 관리하는 정보
-  const supportedTools = supported.supportedTools.sort();
-  const supportedSourceLangs = supported.deepLSupportedLangs.srcLangs.sort();
-  const supportedTargetLangs = supported.deepLSupportedLangs.targetLangs.sort();
-  const initialSourceLang = "Korean";
-  const initialResultLang = "English (American)";
+  const supportedTools: string[] = supported.supportedTools.sort();
+  const supportedSourceLangs: string[] =
+    supported.deepLSupportedLangs.srcLangs.sort();
+  const supportedTargetLangs: string[] =
+    supported.deepLSupportedLangs.targetLangs.sort();
+  const initialSourceLang: string = "Korean";
+  const initialResultLang: string = "English (American)";
 
-  const initialSourceConfig = {
+  const initialSourceConfig: SourceConfig = {
     sourceLang: initialSourceLang,
     sourceText: "",
     supportedLangs: supportedSourceLangs,
     history: [],
   };
 
-  const initialResultsConfig = [
+  const initialResultsConfig: ResultsConfig = [
     {
       isPower: true,
       targetLang: initialResultLang,
@@ -60,75 +110,47 @@ const getInitialConfigs = () => {
   return { initialSourceConfig, initialResultsConfig };
 };
 
-//translate functions
-const translateText = async (sourceConfig, resultsConfig) => {
-  console.log(
-    "translateText start... current Config:",
-    sourceConfig,
-    resultsConfig
-  );
-
-  //get data to send
-  const { sourceLang, sourceText } = sourceConfig;
-  const dataToSend = [];
-  resultsConfig.forEach((resultConfig, index) => {
-    if (resultConfig.isPower === true) {
-      const { targetLang, targetTool } = resultConfig;
-      dataToSend.push({
-        index: index,
-        srcLang: sourceLang,
-        srcText: sourceText,
-        targetLang: targetLang,
-        targetTool: targetTool,
-      });
-    }
-  });
-
-  console.log("dataToSend:", dataToSend);
-  //send data and get response
-  try {
-    webSocketRef.current.emit("translate", dataToSend);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export default function Translate({ webSocketRef }) {
+export default function Translate({ webSocketRef }: TranslateProps) {
   console.log("render Translate...");
 
   //initial states
   const { initialSourceConfig, initialResultsConfig } = getInitialConfigs();
-  const [sourceConfig, setSourceConfig] = useState(initialSourceConfig);
-  const [resultsConfig, setResultsConfig] = useState(initialResultsConfig);
-  const [shouldTranslate, setShouldTranslate] = useState(false);
-  const [shouldHistoryOpen, setShouldHistoryOpen] = useState(false);
+  const [sourceConfig, setSourceConfig] =
+    useState<SourceConfig>(initialSourceConfig);
+  const [resultsConfig, setResultsConfig] =
+    useState<ResultsConfig>(initialResultsConfig);
+  const [shouldTranslate, setShouldTranslate] = useState<boolean>(false);
+  const [shouldHistoryOpen, setShouldHistoryOpen] = useState<boolean>(false);
 
   //refs
-  const history = useRef([]);
+  const history = useRef<HistoryItem[]>([]);
 
   //callbacks
   //update functions
   const updateSourceConfig = useCallback(
-    (key, value) => {
+    (key: string, value: any): void => {
       setSourceConfig({ ...sourceConfig, [key]: value });
     },
     [sourceConfig]
   );
 
-  const updateResultsConfig = useCallback((index, key, value) => {
-    setResultsConfig((prevResultsConfig) => {
-      const newResultsConfig = [...prevResultsConfig];
-      newResultsConfig[index] = { ...newResultsConfig[index], [key]: value };
-      return newResultsConfig;
-    });
-  }, []);
+  const updateResultsConfig = useCallback(
+    (index: number, key: string, value: any): void => {
+      setResultsConfig((prevResultsConfig) => {
+        const newResultsConfig = [...prevResultsConfig];
+        newResultsConfig[index] = { ...newResultsConfig[index], [key]: value };
+        return newResultsConfig;
+      });
+    },
+    []
+  );
 
-  const updateShouldTranslate = useCallback((value) => {
+  const updateShouldTranslate = useCallback((value: boolean): void => {
     console.log("updateShouldTranslate:", value);
     setShouldTranslate(value);
   }, []);
 
-  const updateShouldHistoryOpen = useCallback((value) => {
+  const updateShouldHistoryOpen = useCallback((value: boolean): void => {
     setShouldHistoryOpen(value);
   }, []);
 
@@ -142,7 +164,9 @@ export default function Translate({ webSocketRef }) {
 
     //get data to send
     const { sourceLang, sourceText } = sourceConfig;
-    const dataToSend = [];
+
+    const dataToSend: DataToSendItem[] = [];
+
     resultsConfig.forEach((resultConfig, index) => {
       if (resultConfig.isPower === true) {
         const { targetLang, targetTool } = resultConfig;
@@ -159,8 +183,8 @@ export default function Translate({ webSocketRef }) {
     console.log("dataToSend:", dataToSend);
     //send data and get response
     try {
-      webSocketRef.current.emit("translate", dataToSend, (data) => {
-        console.log("server message: ", data);
+      webSocketRef.current.emit("translate", dataToSend, (response: string) => {
+        console.log("server message: ", response);
       });
     } catch (error) {
       console.log(error);
@@ -192,10 +216,10 @@ export default function Translate({ webSocketRef }) {
 
     const socket = webSocketRef.current;
 
-    const handleTranslationResult = (data) => {
+    const handleTranslationResult = (data: dataToReceive) => {
       console.log("translationResult:", data);
       const { index, srcText, targetText } = data;
-      const historyItem = { srcText, targetText };
+      const historyItem: HistoryItem = { srcText, targetText };
       history.current.push(historyItem);
       console.log("history:", history.current);
       updateResultsConfig(index, "targetText", targetText);
