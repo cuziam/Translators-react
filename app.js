@@ -64,6 +64,7 @@ io.on("connection", (socket) => {
   // 연결이 끊어졌을 때
   socket.on("disconnect", () => {
     console.log("클라이언트 연결이 끊어졌습니다.");
+    socket.removeAllListeners(); // 연결이 끊어진 클라이언트의 소켓을 삭제
   });
 });
 
