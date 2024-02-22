@@ -8,9 +8,9 @@ import AiChat from "./components/main/ai/AiChat";
 import { AppContext } from "./components/main/Context";
 
 function App() {
+  const appUrl: string = import.meta.env.VITE_APP_URL;
   const webSocketRef = useRef<Socket | null>(null);
   const [shouldAiChatOpen, setShouldAiChatOpen] = useState<boolean>(false);
-  const appUrl: string = import.meta.env.VITE_APP_URL;
 
   const updateShouldAiChatOpen = (value: boolean): void => {
     setShouldAiChatOpen(value);
@@ -19,6 +19,7 @@ function App() {
   useEffect(() => {
     // webSocketRef.current가 null이거나 연결되지 않았다면 새로 연결
     if (!webSocketRef.current || !webSocketRef.current.connected) {
+      // 서버에 연결 기다리기
       webSocketRef.current = io(`${appUrl}`);
       webSocketRef.current.on("connect", () => {
         console.log("서버에 연결되었습니다.");
@@ -31,7 +32,7 @@ function App() {
 
     // 컴포넌트가 언마운트될 때 실행되는 정리(clean-up) 함수
     return () => {
-      if (webSocketRef.current) {
+      if (webSocketRef.current !== null) {
         webSocketRef.current.disconnect();
         webSocketRef.current = null;
       }
@@ -42,14 +43,12 @@ function App() {
     <>
       <div>
         <Header />{" "}
-        <AppContext.Provider value={{ updateShouldAiChatOpen }}>
+        <AppContext.Provider
+          value={{ shouldAiChatOpen, updateShouldAiChatOpen }}
+        >
           <Translate webSocketRef={webSocketRef} />
+          <AiChat webSocketRef={webSocketRef} />{" "}
         </AppContext.Provider>
-        <AiChat
-          webSocketRef={webSocketRef}
-          shouldAiChatOpen={shouldAiChatOpen}
-          updateShouldAiChatOpen={updateShouldAiChatOpen}
-        />
       </div>
     </>
   );

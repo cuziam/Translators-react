@@ -7,8 +7,6 @@ import SourceBar from "./SourceBar";
 import SourceEditarea from "./SourceEditarea";
 import SourceToolbar from "./SourceToolbar";
 
-import propTypes from "prop-types";
-
 // TranslateSource 컴포넌트
 function TranslateSource() {
   //context
@@ -18,8 +16,8 @@ function TranslateSource() {
   const audioContextRef = useRef<AudioContext | null>(null); //audioContextRef를 생성합니다. 자동재생 정책 때문에 초기값은 null입니다.
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
-  const [isRecording, setIsRecording] = useState(false);
-  const [editareaValue, setEditareaValue] = useState("");
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [editareaValue, setEditareaValue] = useState<string>("");
 
   //util functions
   const copyText = useCallback(() => {
@@ -30,6 +28,7 @@ function TranslateSource() {
   }, []);
 
   const sendTtsRequest = useCallback(() => {
+    if (webSocketRef.current === null) return;
     webSocketRef.current.emit(
       "ttsRequest",
       editareaValue,
@@ -95,6 +94,7 @@ function TranslateSource() {
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
         const audioArrayBuffer = await audioBlob.arrayBuffer();
+        if (webSocketRef.current === null) return;
         webSocketRef.current.emit(
           "transcript",
           audioArrayBuffer,
@@ -160,9 +160,5 @@ function TranslateSource() {
     </div>
   );
 }
-
-TranslateSource.propTypes = {
-  initialSourceConfig: propTypes.object,
-};
 
 export default TranslateSource;

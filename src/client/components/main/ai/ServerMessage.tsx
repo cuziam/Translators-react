@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-export default function ServerMessage({ message, isLoading }) {
+
+interface ServerMessagePropsType {
+  message: string;
+  isLoading: boolean;
+}
+
+export default function ServerMessage({
+  message,
+  isLoading,
+}: ServerMessagePropsType) {
   const addClassNames = () => {};
   return (
     <div className="flex justify-start mb-4">

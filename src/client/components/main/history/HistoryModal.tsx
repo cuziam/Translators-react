@@ -1,13 +1,20 @@
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
+import { HistoryItem } from "../TranslateInterfaces";
 import HistoryModalItem from "./HistoryModalItem";
+
+interface HistoryModalPropsType {
+  shouldHistoryOpen: boolean;
+  updateShouldHistoryOpen: (value: boolean) => void;
+  historyRef: React.MutableRefObject<HistoryItem[]>;
+}
 
 export default function HistoryModal({
   shouldHistoryOpen,
   updateShouldHistoryOpen,
   historyRef,
-}) {
+}: HistoryModalPropsType) {
   const [open, setOpen] = useState(true);
 
   const cancelButtonRef = useRef(null);

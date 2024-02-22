@@ -3,7 +3,14 @@ import React, { useContext } from "react";
 import { forwardRef } from "react";
 import { ResultContext } from "./Context";
 
-const TargetEditarea = forwardRef(function targetEditarea(props, ref) {
+interface TargetEditareaPropsType {
+  targetText: string;
+}
+
+const TargetEditarea = forwardRef(function targetEditarea(
+  props: TargetEditareaPropsType,
+  ref: React.Ref<HTMLParagraphElement>
+) {
   const { resultConfig } = useContext(ResultContext);
   return (
     <p

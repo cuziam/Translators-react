@@ -5,16 +5,28 @@ import propTypes from "prop-types";
 
 import { ResultContext } from "./Context";
 
-function classNames(...classes) {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 //optionsName is the name of the dropdown
 //options is an array of objects
-function Dropdown({ optionsName, options, initialOption, updateConfig }) {
-  const [clicked, setClicked] = useState(initialOption); //default value is the first element in the array
+interface DropdownProps {
+  optionsName: string;
+  options: string[];
+  initialOption: string;
+  updateConfig: (key: string, value: any) => void;
+}
 
-  const handleClicked = (optionsName, option) => {
+function Dropdown({
+  optionsName,
+  options,
+  initialOption,
+  updateConfig,
+}: DropdownProps) {
+  const [clicked, setClicked] = useState<string>(initialOption); //default value is the first element in the array
+
+  const handleClicked = (optionsName: string, option: string) => {
     setClicked(option);
     updateConfig(optionsName, option);
   };
@@ -72,12 +84,5 @@ function Dropdown({ optionsName, options, initialOption, updateConfig }) {
     </Menu>
   );
 }
-
-Dropdown.propTypes = {
-  optionsName: propTypes.string.isRequired,
-  options: propTypes.array.isRequired,
-  initialOption: propTypes.string.isRequired,
-  updateConfig: propTypes.func.isRequired,
-};
 
 export default Dropdown;

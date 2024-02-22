@@ -6,33 +6,40 @@ import TargetBar from "./TargetBar";
 import TargetEditarea from "./TargetEditarea";
 import TargetToolbar from "./TargetToolbar";
 import { TranslateContext, ResultContext } from "./Context";
-import propTypes from "prop-types";
 
-function TranslateResult({ index }) {
+interface TranslateResultPropsType {
+  index: number;
+}
+
+function TranslateResult({ index }: TranslateResultPropsType) {
   //define state for TranslateResult
   const { resultsConfig, updateResultsConfig, webSocketRef } =
     useContext(TranslateContext);
 
   //util functions
-  const textareaRef = useRef(null);
-  const audioContextRef = useRef(null);
+  const textareaRef = useRef<HTMLParagraphElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const copyText = () => {
     console.log(textareaRef.current);
-    const text = textareaRef.current.innerText;
-    navigator.clipboard.writeText(text);
-    alert("Copied!");
+    if (textareaRef.current !== null) {
+      const text = textareaRef.current.innerText;
+      navigator.clipboard.writeText(text);
+      alert("Copied!");
+    } else {
+      alert("cannot find text... sorry...");
+    }
   };
 
   const sendTtsRequest = useCallback(() => {
+    if (webSocketRef.current === null || textareaRef.current === null) return;
     webSocketRef.current.emit(
       "ttsRequest",
       textareaRef.current.innerText,
-      (response) => {
+      (response: string) => {
         //audioContext가 생성되어 있지 않으면 생성
         if (audioContextRef.current === null) {
-          audioContextRef.current = new (window.AudioContext ||
-            window.webkitAudioContext)();
+          audioContextRef.current = new window.AudioContext();
         }
 
         //response타입이 url인지 확인
@@ -45,11 +52,18 @@ function TranslateResult({ index }) {
             .get(response, { responseType: "arraybuffer" })
             .then((response) => {
               // audioContext는 이 컴포넌트 내에서 미리 생성되어 있어야 합니다.
-              return audioContextRef.current.decodeAudioData(response.data);
+              return audioContextRef.current?.decodeAudioData(response.data);
             })
             .then((audioBuffer) => {
+              if (!audioBuffer) {
+                throw new Error("audioBuffer is not created");
+              }
+              if (audioContextRef.current === null) return;
               const source = audioContextRef.current.createBufferSource();
-              source.buffer = audioBuffer;
+
+              if (!source) {
+                throw new Error("source is not created");
+              }
               source.connect(audioContextRef.current.destination);
               source.start();
             })
@@ -63,7 +77,7 @@ function TranslateResult({ index }) {
 
   //define resultConfig and updateResultConfig
   const resultConfig = resultsConfig[index];
-  const updateResultConfig = (key, value) => {
+  const updateResultConfig = (key: string, value: any) => {
     updateResultsConfig(index, key, value);
   };
 
@@ -97,19 +111,5 @@ function TranslateResult({ index }) {
     </ResultContext.Provider>
   );
 }
-
-//prop-types
-TranslateResult.propTypes = {
-  index: propTypes.number.isRequired,
-  initialResultConfig: propTypes.shape({
-    isPower: propTypes.bool.isRequired,
-    targetLang: propTypes.string.isRequired,
-    targetTool: propTypes.string.isRequired,
-    targetText: propTypes.string.isRequired,
-    supportedTools: propTypes.array.isRequired,
-    supportedLangs: propTypes.array.isRequired,
-    isLoading: propTypes.bool.isRequired,
-  }),
-};
 
 export default TranslateResult;

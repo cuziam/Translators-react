@@ -1,15 +1,22 @@
 import { forwardRef, useState, useContext, useEffect, useRef } from "react";
 import { SourceContext, TranslateContext } from "./Context";
-import propTypes from "prop-types";
 
-const SourceEditarea = ({ editareaValue, updateEditareaValue }) => {
+interface SourceEditareaProps {
+  editareaValue: string;
+  updateEditareaValue: (text: string) => void;
+}
+
+const SourceEditarea = ({
+  editareaValue,
+  updateEditareaValue,
+}: SourceEditareaProps) => {
   return (
     <>
       <textarea
         className="SourceEditarea w-80 h-36 p-2 bg-background border-2 border-black border-opacity-5 text-sans text-base overflow-auto 
       resize-none focus:ring-0 focus:outline-none focus:border-primary"
         placeholder="Please enter what you want to translate..."
-        value={String(editareaValue)}
+        value={editareaValue}
         maxLength={1000}
         onChange={(e) => {
           updateEditareaValue(e.target.value);
@@ -23,8 +30,4 @@ const SourceEditarea = ({ editareaValue, updateEditareaValue }) => {
   );
 };
 
-SourceEditarea.propTypes = {
-  editareaValue: propTypes.string,
-  updateEditareaValue: propTypes.func,
-};
 export default SourceEditarea;

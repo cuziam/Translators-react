@@ -1,9 +1,18 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useContext,
+} from "react";
 import { TranslateContext } from "./Context";
-import propTypes from "prop-types";
-
-//communication
-import axios from "axios";
+import {
+  SourceConfig,
+  ResultsConfig,
+  HistoryItem,
+  DataToSendItems,
+  DataToReceive,
+} from "./TranslateInterfaces";
 
 //user-defined components
 import TranslateSource from "./TranslateSource";
@@ -11,114 +20,22 @@ import TranslateResults from "./TranslateResults";
 import HistoryModal from "./history/HistoryModal";
 
 //data
-import supported from "../../data/supported.json"; //수정 필요: db에서 받아오거나, 코드 내에서 처리할 것
 import { Socket } from "socket.io-client";
 
-interface SourceConfig {
-  sourceLang: string;
-  sourceText: string;
-  supportedLangs: string[];
-  history: HistoryItem[];
-}
-interface HistoryItem {
-  srcText: string;
-  targetText: string;
+interface TranslatePropsType {
+  webSocketRef: React.MutableRefObject<Socket | null>;
 }
 
-interface ResultConfig {
-  isPower: boolean;
-  targetLang: string;
-  targetTool: string;
-  targetText: string;
-  supportedTools: string[];
-  supportedLangs: string[];
-  isLoading: boolean;
-}
-type ResultsConfig = ResultConfig[];
-
-interface InitialConfig {
-  initialSourceConfig: SourceConfig;
-  initialResultsConfig: ResultsConfig;
-}
-
-interface DataToSendItem {
-  index: number;
-  srcLang: string;
-  srcText: string;
-  targetLang: string;
-  targetTool: string;
-}
-
-interface dataToReceive {
-  index: number;
-  srcLang: string;
-  srcText: string;
-  targetLang: string;
-  targetText: string;
-  targetTool: string;
-}
-interface TranslateProps {
-  webSocketRef: React.MutableRefObject<Socket>;
-}
-
-const getInitialConfigs = (): InitialConfig => {
-  // 관리하는 정보
-  const supportedTools: string[] = supported.supportedTools.sort();
-  const supportedSourceLangs: string[] =
-    supported.deepLSupportedLangs.srcLangs.sort();
-  const supportedTargetLangs: string[] =
-    supported.deepLSupportedLangs.targetLangs.sort();
-  const initialSourceLang: string = "Korean";
-  const initialResultLang: string = "English (American)";
-
-  const initialSourceConfig: SourceConfig = {
-    sourceLang: initialSourceLang,
-    sourceText: "",
-    supportedLangs: supportedSourceLangs,
-    history: [],
-  };
-
-  const initialResultsConfig: ResultsConfig = [
-    {
-      isPower: true,
-      targetLang: initialResultLang,
-      targetTool: "Google",
-      targetText: "",
-      supportedTools: supportedTools,
-      supportedLangs: supportedTargetLangs,
-      isLoading: false,
-    },
-    {
-      isPower: true,
-      targetLang: initialResultLang,
-      targetTool: "DeepL",
-      targetText: "",
-      supportedTools: supportedTools,
-      supportedLangs: supportedTargetLangs,
-      isLoading: false,
-    },
-    {
-      isPower: false,
-      targetLang: initialResultLang,
-      targetTool: "Papago",
-      targetText: "",
-      supportedTools: supportedTools,
-      supportedLangs: supportedTargetLangs,
-      isLoading: false,
-    },
-  ];
-  return { initialSourceConfig, initialResultsConfig };
-};
-
-export default function Translate({ webSocketRef }: TranslateProps) {
+export default function Translate({ webSocketRef }: TranslatePropsType) {
   console.log("render Translate...");
+  const context = useContext(TranslateContext);
 
-  //initial states
-  const { initialSourceConfig, initialResultsConfig } = getInitialConfigs();
-  const [sourceConfig, setSourceConfig] =
-    useState<SourceConfig>(initialSourceConfig);
-  const [resultsConfig, setResultsConfig] =
-    useState<ResultsConfig>(initialResultsConfig);
+  const [sourceConfig, setSourceConfig] = useState<SourceConfig>(
+    context.sourceConfig
+  );
+  const [resultsConfig, setResultsConfig] = useState<ResultsConfig>(
+    context.resultsConfig
+  );
   const [shouldTranslate, setShouldTranslate] = useState<boolean>(false);
   const [shouldHistoryOpen, setShouldHistoryOpen] = useState<boolean>(false);
 
@@ -156,6 +73,11 @@ export default function Translate({ webSocketRef }: TranslateProps) {
 
   //translate
   const translate = useCallback(async () => {
+    if (webSocketRef.current === null) {
+      alert("Cannot connect to the server. Please try again later.");
+      return;
+    }
+
     console.log(
       "translateText start... current Config:",
       sourceConfig,
@@ -165,7 +87,7 @@ export default function Translate({ webSocketRef }: TranslateProps) {
     //get data to send
     const { sourceLang, sourceText } = sourceConfig;
 
-    const dataToSend: DataToSendItem[] = [];
+    const dataToSend: DataToSendItems = [];
 
     resultsConfig.forEach((resultConfig, index) => {
       if (resultConfig.isPower === true) {
@@ -213,10 +135,10 @@ export default function Translate({ webSocketRef }: TranslateProps) {
   //번역 결과 처리
   useEffect(() => {
     if (webSocketRef.current === null) return;
-
+    console.log(webSocketRef, typeof webSocketRef);
     const socket = webSocketRef.current;
 
-    const handleTranslationResult = (data: dataToReceive) => {
+    const handleTranslationResult = (data: DataToReceive) => {
       console.log("translationResult:", data);
       const { index, srcText, targetText } = data;
       const historyItem: HistoryItem = { srcText, targetText };
@@ -231,7 +153,7 @@ export default function Translate({ webSocketRef }: TranslateProps) {
     return () => {
       socket.off("translationResult", handleTranslationResult); //메모리 누수 방지
     };
-  }, [webSocketRef.current, updateResultsConfig]);
+  }, [webSocketRef?.current, updateResultsConfig]);
 
   //render
   return (
@@ -243,24 +165,17 @@ export default function Translate({ webSocketRef }: TranslateProps) {
       />
       <TranslateContext.Provider
         value={{
-          translate,
           sourceConfig,
+          resultsConfig,
+          translate,
           updateSourceConfig,
           updateShouldTranslate,
           updateShouldHistoryOpen,
-          webSocketRef,
-        }}
-      >
-        <TranslateSource />
-      </TranslateContext.Provider>
-
-      <TranslateContext.Provider
-        value={{
-          resultsConfig,
           updateResultsConfig,
           webSocketRef,
         }}
       >
+        <TranslateSource />
         <TranslateResults />
       </TranslateContext.Provider>
     </div>

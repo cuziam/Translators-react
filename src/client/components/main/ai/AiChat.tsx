@@ -3,16 +3,16 @@ import React, {
   useCallback,
   useEffect,
   useRef,
+  useContext,
   Fragment,
 } from "react";
+import { AppContext } from "../Context";
 import ClientMessage from "./ClientMessage";
 import ServerMessage from "./ServerMessage";
 import { Dialog, Transition } from "@headlessui/react";
 
 interface AiChatProps {
   webSocketRef: React.MutableRefObject<any>;
-  shouldAiChatOpen: boolean;
-  updateShouldAiChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface HistoryRecord {
@@ -21,17 +21,13 @@ interface HistoryRecord {
   message: string;
 }
 
-const AiChat = ({
-  webSocketRef,
-  shouldAiChatOpen,
-  updateShouldAiChatOpen,
-}: AiChatProps) => {
+const AiChat = ({ webSocketRef }: AiChatProps) => {
   /**
    * 상위컴포넌트가 전달한 webSocketRef를 이용하여 서버로 메시지를 전송합니다.
    * 서버로 전송할 메세지는 문자열이어야 하며 clientMessage라는 이벤트명으로 전송합니다.
    * 응답 메세지는 문자열이며 서버에서 serverMessage라는 이벤트를 통해 전달받습니다.
    */
-
+  const { shouldAiChatOpen, updateShouldAiChatOpen } = useContext(AppContext);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);

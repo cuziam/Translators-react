@@ -6,16 +6,16 @@ import {
   AppContext,
 } from "./Context";
 
-function Tools() {
+interface ToolsPropsType {
+  name: "source" | "target";
+}
+
+function Tools({ name }: ToolsPropsType) {
   //상위 컴포넌트가 SourceContext.Provider인 경우와 ResultContext.Provider인 경우를 구분하여 Context를 가져온다.
   const { updateShouldHistoryOpen } = useContext(TranslateContext);
   const { updateShouldAiChatOpen } = useContext(AppContext);
-  let context;
-  if (useContext(SourceContext) !== undefined) {
-    context = useContext(SourceContext);
-  } else {
-    context = useContext(ResultContext);
-  }
+  const context =
+    name === "source" ? useContext(SourceContext) : useContext(ResultContext);
 
   return (
     <div className="Tools h-6 justify-start items-center gap-2 inline-flex">
@@ -23,7 +23,7 @@ function Tools() {
         viewBox="0 0 31 30"
         xmlns="http://www.w3.org/2000/svg"
         className="copy group w-6 h-6 fill-icon"
-        onClick={() => context.copyText()}
+        onClick={context.copyText}
       >
         <title>Copy</title>
         <g id="icon-copy">

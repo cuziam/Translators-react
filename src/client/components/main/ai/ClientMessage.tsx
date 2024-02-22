@@ -1,4 +1,7 @@
-export default function ClientMessage({ message }) {
+interface ClientMessagePropsType {
+  message: string;
+}
+export default function ClientMessage({ message }: ClientMessagePropsType) {
   return (
     <div className="flex justify-end mb-4">
       <div className="mr-2 py-2 px-3 bg-primary rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white text-start">
