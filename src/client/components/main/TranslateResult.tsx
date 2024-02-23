@@ -1,5 +1,9 @@
 import { useContext, useCallback, useRef } from "react";
 import axios from "axios";
+//redux
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/index";
+import { translateSliceActions } from "../../store/translate-slice";
 
 //user-defined components
 import TargetBar from "./TargetBar";
@@ -13,8 +17,8 @@ interface TranslateResultPropsType {
 
 function TranslateResult({ index }: TranslateResultPropsType) {
   //define state for TranslateResult
-  const { resultsConfig, updateResultsConfig, webSocketRef } =
-    useContext(TranslateContext);
+  const dispatch = useDispatch();
+  const { webSocketRef } = useContext(TranslateContext);
 
   //util functions
   const textareaRef = useRef<HTMLParagraphElement>(null);
@@ -75,14 +79,29 @@ function TranslateResult({ index }: TranslateResultPropsType) {
     );
   }, [webSocketRef, textareaRef, audioContextRef]);
 
-  //define resultConfig and updateResultConfig
-  const resultConfig = resultsConfig[index];
+  //define resultConfig and updateResultConfig  const resultConfig = useSelector(
+  const resultConfig = useSelector(
+    (state: RootState) => state.translate.resultsConfig[index]
+  );
+  const updateResultsConfig = (
+    index: number,
+    key: string,
+    value: string | string[] | boolean
+  ) => {
+    dispatch(
+      translateSliceActions.updateResultsConfig({
+        index,
+        key,
+        value,
+      })
+    );
+  };
   const updateResultConfig = (key: string, value: any) => {
     updateResultsConfig(index, key, value);
   };
 
   //render
-  return resultConfig.isPower === true ? (
+  return (
     <ResultContext.Provider
       value={{
         resultConfig,
@@ -91,23 +110,18 @@ function TranslateResult({ index }: TranslateResultPropsType) {
         sendTtsRequest,
       }}
     >
-      <div className="PowerOn w-80 h-48 bg-white flex-col justify-center items-start flex rounded-md">
+      {resultConfig.isPower === true ? (
+        <div className="PowerOn w-80 h-48 bg-white flex-col justify-center items-start flex rounded-md">
+          <TargetBar />
+          <TargetEditarea
+            ref={textareaRef}
+            targetText={resultConfig.targetText}
+          />
+          <TargetToolbar />
+        </div>
+      ) : (
         <TargetBar />
-        <TargetEditarea
-          ref={textareaRef}
-          targetText={resultsConfig[index].targetText}
-        />
-        <TargetToolbar />
-      </div>
-    </ResultContext.Provider>
-  ) : (
-    <ResultContext.Provider
-      value={{
-        resultConfig,
-        updateResultConfig,
-      }}
-    >
-      <TargetBar />
+      )}
     </ResultContext.Provider>
   );
 }

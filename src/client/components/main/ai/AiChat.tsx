@@ -10,7 +10,9 @@ import { AppContext } from "../Context";
 import ClientMessage from "./ClientMessage";
 import ServerMessage from "./ServerMessage";
 import { Dialog, Transition } from "@headlessui/react";
-
+import { RootState } from "../../../store/index";
+import { appSliceActions } from "../../../store/app-slice";
+import { useDispatch, useSelector } from "react-redux";
 interface AiChatProps {
   webSocketRef: React.MutableRefObject<any>;
 }
@@ -27,7 +29,11 @@ const AiChat = ({ webSocketRef }: AiChatProps) => {
    * 서버로 전송할 메세지는 문자열이어야 하며 clientMessage라는 이벤트명으로 전송합니다.
    * 응답 메세지는 문자열이며 서버에서 serverMessage라는 이벤트를 통해 전달받습니다.
    */
-  const { shouldAiChatOpen, updateShouldAiChatOpen } = useContext(AppContext);
+  const dispatch = useDispatch();
+  const shouldAiChatOpen = useSelector(
+    (state: RootState) => state.app.shouldAiChatOpen
+  );
+
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
   const chatHistoryRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -218,7 +224,7 @@ const AiChat = ({ webSocketRef }: AiChatProps) => {
                     type="button"
                     className="cancel inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                     onClick={() => {
-                      updateShouldAiChatOpen(false);
+                      dispatch(appSliceActions.updateShouldAiChatOpen(false));
                     }}
                     ref={cancelButtonRef}
                   >

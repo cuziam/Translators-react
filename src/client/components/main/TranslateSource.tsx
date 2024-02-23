@@ -2,6 +2,8 @@ import React, { useState, useRef, useCallback } from "react";
 import { useEffect, useContext } from "react";
 import { SourceContext, TranslateContext } from "./Context";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { translateSliceActions } from "../../store/translate-slice";
 
 import SourceBar from "./SourceBar";
 import SourceEditarea from "./SourceEditarea";
@@ -9,9 +11,10 @@ import SourceToolbar from "./SourceToolbar";
 
 // TranslateSource 컴포넌트
 function TranslateSource() {
-  //context
-  const { updateSourceConfig, webSocketRef, updateShouldTranslate } =
-    useContext(TranslateContext);
+  //redux
+  const dispatch = useDispatch();
+
+  const { webSocketRef } = useContext(TranslateContext);
   const editareaRef = useRef<HTMLTextAreaElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null); //audioContextRef를 생성합니다. 자동재생 정책 때문에 초기값은 null입니다.
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -122,13 +125,18 @@ function TranslateSource() {
     if (editareaValue.length > 0) {
       // 그 후의 렌더링에서 디바운싱 로직 실행
       const debounce = setTimeout(() => {
-        updateSourceConfig("sourceText", editareaValue);
-        updateShouldTranslate(true);
+        dispatch(
+          translateSliceActions.updateSourceConfig({
+            key: "sourceText",
+            value: editareaValue,
+          })
+        );
+        dispatch(translateSliceActions.updateShouldTranslate(true));
       }, 1300);
 
       return () => clearTimeout(debounce);
     }
-  }, [editareaValue, updateShouldTranslate]);
+  }, [editareaValue, dispatch]);
 
   useEffect(() => {
     if (isRecording === true) {
@@ -136,6 +144,11 @@ function TranslateSource() {
     } else if (isRecording === false) {
       stopRecord();
     }
+    return () => {
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+      }
+    };
   }, [isRecording, startRecord, stopRecord]);
 
   //render

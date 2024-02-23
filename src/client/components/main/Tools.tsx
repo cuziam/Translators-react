@@ -6,12 +6,17 @@ import {
   AppContext,
 } from "./Context";
 
+import { RootState } from "../../store/index";
+import { useSelector, useDispatch } from "react-redux";
+import { translateSliceActions } from "../../store/translate-slice";
+import { appSliceActions } from "../../store/app-slice";
 interface ToolsPropsType {
   name: "source" | "target";
 }
 
 function Tools({ name }: ToolsPropsType) {
   //상위 컴포넌트가 SourceContext.Provider인 경우와 ResultContext.Provider인 경우를 구분하여 Context를 가져온다.
+  const dispatch = useDispatch();
   const { updateShouldHistoryOpen } = useContext(TranslateContext);
   const { updateShouldAiChatOpen } = useContext(AppContext);
   const context =
@@ -124,7 +129,7 @@ function Tools({ name }: ToolsPropsType) {
             xmlns="http://www.w3.org/2000/svg"
             className="history group w-6 h-6 fill-icon"
             onClick={() => {
-              updateShouldHistoryOpen(true);
+              dispatch(translateSliceActions.updateShouldHistoryOpen(true));
             }}
           >
             <title>History</title>
@@ -141,7 +146,7 @@ function Tools({ name }: ToolsPropsType) {
             viewBox="0 0 2406 2406"
             className="group w-6 h-6"
             onClick={() => {
-              updateShouldAiChatOpen(true);
+              dispatch(appSliceActions.updateShouldAiChatOpen(true));
             }}
           >
             <title>AI Chat</title>

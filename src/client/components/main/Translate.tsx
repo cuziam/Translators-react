@@ -1,18 +1,13 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  useContext,
-} from "react";
+import React, { useEffect, useCallback, useRef } from "react";
 import { TranslateContext } from "./Context";
 import {
-  SourceConfig,
-  ResultsConfig,
   HistoryItem,
   DataToSendItems,
   DataToReceive,
 } from "./TranslateInterfaces";
+import { RootState } from "../../store/index";
+import { useSelector, useDispatch } from "react-redux";
+import { translateSliceActions } from "../../store/translate-slice";
 
 //user-defined components
 import TranslateSource from "./TranslateSource";
@@ -28,48 +23,14 @@ interface TranslatePropsType {
 
 export default function Translate({ webSocketRef }: TranslatePropsType) {
   console.log("render Translate...");
-  const context = useContext(TranslateContext);
-
-  const [sourceConfig, setSourceConfig] = useState<SourceConfig>(
-    context.sourceConfig
+  //redux
+  const dispatch = useDispatch();
+  const { shouldTranslate, sourceConfig, resultsConfig } = useSelector(
+    (state: RootState) => state.translate
   );
-  const [resultsConfig, setResultsConfig] = useState<ResultsConfig>(
-    context.resultsConfig
-  );
-  const [shouldTranslate, setShouldTranslate] = useState<boolean>(false);
-  const [shouldHistoryOpen, setShouldHistoryOpen] = useState<boolean>(false);
 
   //refs
   const history = useRef<HistoryItem[]>([]);
-
-  //callbacks
-  //update functions
-  const updateSourceConfig = useCallback(
-    (key: string, value: any): void => {
-      setSourceConfig({ ...sourceConfig, [key]: value });
-    },
-    [sourceConfig]
-  );
-
-  const updateResultsConfig = useCallback(
-    (index: number, key: string, value: any): void => {
-      setResultsConfig((prevResultsConfig) => {
-        const newResultsConfig = [...prevResultsConfig];
-        newResultsConfig[index] = { ...newResultsConfig[index], [key]: value };
-        return newResultsConfig;
-      });
-    },
-    []
-  );
-
-  const updateShouldTranslate = useCallback((value: boolean): void => {
-    console.log("updateShouldTranslate:", value);
-    setShouldTranslate(value);
-  }, []);
-
-  const updateShouldHistoryOpen = useCallback((value: boolean): void => {
-    setShouldHistoryOpen(value);
-  }, []);
 
   //translate
   const translate = useCallback(async () => {
@@ -83,7 +44,6 @@ export default function Translate({ webSocketRef }: TranslatePropsType) {
       sourceConfig,
       resultsConfig
     );
-
     //get data to send
     const { sourceLang, sourceText } = sourceConfig;
 
@@ -117,20 +77,20 @@ export default function Translate({ webSocketRef }: TranslatePropsType) {
   useEffect(() => {
     if (shouldTranslate) {
       translate();
-      updateShouldTranslate(false);
+      dispatch(translateSliceActions.updateShouldTranslate(false));
       resultsConfig.forEach((_, index) => {
         if (resultsConfig[index].isPower === true) {
-          updateResultsConfig(index, "isLoading", true);
+          dispatch(
+            translateSliceActions.updateResultsConfig({
+              index,
+              key: "isLoading",
+              value: true,
+            })
+          );
         }
       });
     }
-  }, [
-    shouldTranslate,
-    translate,
-    updateShouldTranslate,
-    resultsConfig,
-    updateResultsConfig,
-  ]);
+  }, [shouldTranslate, translate, resultsConfig, dispatch]);
 
   //번역 결과 처리
   useEffect(() => {
@@ -144,8 +104,20 @@ export default function Translate({ webSocketRef }: TranslatePropsType) {
       const historyItem: HistoryItem = { srcText, targetText };
       history.current.push(historyItem);
       console.log("history:", history.current);
-      updateResultsConfig(index, "targetText", targetText);
-      updateResultsConfig(index, "isLoading", false);
+      dispatch(
+        translateSliceActions.updateResultsConfig({
+          index,
+          key: "targetText",
+          value: targetText,
+        })
+      );
+      dispatch(
+        translateSliceActions.updateResultsConfig({
+          index,
+          key: "isLoading",
+          value: false,
+        })
+      );
     };
 
     socket.on("translationResult", handleTranslationResult);
@@ -153,25 +125,15 @@ export default function Translate({ webSocketRef }: TranslatePropsType) {
     return () => {
       socket.off("translationResult", handleTranslationResult); //메모리 누수 방지
     };
-  }, [webSocketRef?.current, updateResultsConfig]);
+  }, [webSocketRef?.current, dispatch]);
 
   //render
   return (
     <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto mb-52">
-      <HistoryModal
-        shouldHistoryOpen={shouldHistoryOpen}
-        updateShouldHistoryOpen={updateShouldHistoryOpen}
-        historyRef={history}
-      />
+      <HistoryModal historyRef={history} />
       <TranslateContext.Provider
         value={{
-          sourceConfig,
-          resultsConfig,
           translate,
-          updateSourceConfig,
-          updateShouldTranslate,
-          updateShouldHistoryOpen,
-          updateResultsConfig,
           webSocketRef,
         }}
       >

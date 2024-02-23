@@ -5,16 +5,9 @@ import Header from "./components/head/Header";
 import Translate from "./components/main/Translate";
 import AiChat from "./components/main/ai/AiChat";
 
-import { AppContext } from "./components/main/Context";
-
 function App() {
   const appUrl: string = import.meta.env.VITE_APP_URL;
   const webSocketRef = useRef<Socket | null>(null);
-  const [shouldAiChatOpen, setShouldAiChatOpen] = useState<boolean>(false);
-
-  const updateShouldAiChatOpen = (value: boolean): void => {
-    setShouldAiChatOpen(value);
-  };
 
   useEffect(() => {
     // webSocketRef.current가 null이거나 연결되지 않았다면 새로 연결
@@ -42,13 +35,9 @@ function App() {
   return (
     <>
       <div>
-        <Header />{" "}
-        <AppContext.Provider
-          value={{ shouldAiChatOpen, updateShouldAiChatOpen }}
-        >
-          <Translate webSocketRef={webSocketRef} />
-          <AiChat webSocketRef={webSocketRef} />{" "}
-        </AppContext.Provider>
+        <Header />
+        <Translate webSocketRef={webSocketRef} />
+        <AiChat webSocketRef={webSocketRef} />
       </div>
     </>
   );

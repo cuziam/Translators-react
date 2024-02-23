@@ -72,23 +72,8 @@ interface ResultContextType {
 }
 
 interface TranslateContextType {
-  sourceConfig: SourceConfig;
-  resultsConfig: ResultsConfig;
   translate: () => Promise<void>;
-  updateSourceConfig: (key: string, value: string | boolean | string[]) => void;
-  updateResultsConfig: (
-    index: number,
-    key: string,
-    value: string | boolean
-  ) => void;
-  updateShouldHistoryOpen: (value: boolean) => void;
-  updateShouldTranslate: (value: boolean) => void;
   webSocketRef: React.MutableRefObject<Socket | null>;
-}
-
-interface AppContextType {
-  shouldAiChatOpen: boolean;
-  updateShouldAiChatOpen: (value: boolean) => void;
 }
 
 export const SourceContext = React.createContext<SourceContextType>({
@@ -106,24 +91,12 @@ export const ResultContext = React.createContext<ResultContextType>({
 });
 
 export const TranslateContext = React.createContext<TranslateContextType>({
-  sourceConfig: getInitialConfigs().initialSourceConfig,
-  resultsConfig: getInitialConfigs().initialResultsConfig,
   translate: async () => {},
-  updateSourceConfig: () => {},
-  updateResultsConfig: () => {},
-  updateShouldHistoryOpen: () => {},
-  updateShouldTranslate: () => {},
   webSocketRef: { current: null },
-});
-
-export const AppContext = React.createContext<AppContextType>({
-  shouldAiChatOpen: false,
-  updateShouldAiChatOpen: (value: boolean) => {},
 });
 
 export default {
   ResultContext,
   SourceContext,
   TranslateContext,
-  AppContext,
 };
