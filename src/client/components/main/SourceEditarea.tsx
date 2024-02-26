@@ -22,6 +22,7 @@ const SourceEditarea = ({
           updateEditareaValue(e.target.value);
         }}
         required={true}
+        data-testid="sourceEditarea"
       ></textarea>
       <p className="absolute text-[8px] right-3 bottom-10">
         {editareaValue.length}/1000

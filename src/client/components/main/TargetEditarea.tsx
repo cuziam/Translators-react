@@ -16,6 +16,7 @@ const TargetEditarea = forwardRef(function targetEditarea(
     <p
       ref={ref}
       className="TargetEditarea w-80 h-32 p-2 bg-background border-l-2 border-r-2 border-black border-opacity-5 overflow-auto"
+      data-testid="targetEditarea"
     >
       {props.targetText}
       {resultConfig.isLoading ? "..." : ""}

@@ -17,8 +17,6 @@ interface ToolsPropsType {
 function Tools({ name }: ToolsPropsType) {
   //상위 컴포넌트가 SourceContext.Provider인 경우와 ResultContext.Provider인 경우를 구분하여 Context를 가져온다.
   const dispatch = useDispatch();
-  const { updateShouldHistoryOpen } = useContext(TranslateContext);
-  const { updateShouldAiChatOpen } = useContext(AppContext);
   const context =
     name === "source" ? useContext(SourceContext) : useContext(ResultContext);
 

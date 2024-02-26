@@ -90,7 +90,15 @@ export const SourceContext = React.createContext<SourceContextType>({
   updateEditareaValue: () => {},
 });
 export const ResultContext = React.createContext<ResultContextType>({
-  resultConfig: getInitialConfigs().initialResultsConfig[0], //수정 필요: 초기값 설정
+  resultConfig: {
+    isPower: true,
+    targetLang: "",
+    targetTool: "",
+    targetText: "",
+    supportedTools: [],
+    supportedLangs: [],
+    isLoading: false,
+  },
   updateResultConfig: () => {},
   copyText: () => {},
   sendTtsRequest: () => {},

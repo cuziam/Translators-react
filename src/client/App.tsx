@@ -34,7 +34,7 @@ function App() {
 
   return (
     <>
-      <div>
+      <div data-testid="app-component">
         <Header />
         <Translate webSocketRef={webSocketRef} />
         <AiChat webSocketRef={webSocketRef} />
