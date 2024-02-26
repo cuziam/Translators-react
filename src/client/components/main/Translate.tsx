@@ -95,7 +95,6 @@ export default function Translate({ webSocketRef }: TranslatePropsType) {
   //번역 결과 처리
   useEffect(() => {
     if (webSocketRef.current === null) return;
-    console.log(webSocketRef, typeof webSocketRef);
     const socket = webSocketRef.current;
 
     const handleTranslationResult = (data: DataToReceive) => {

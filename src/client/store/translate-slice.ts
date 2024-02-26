@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import supported from "../data/supported.json"; //수정 필요: db에서 받아오거나, 코드 내에서 처리할 것
+
 interface SourceConfig {
   sourceLang: string;
   sourceText: string;
@@ -86,10 +87,6 @@ interface translateState {
   shouldHistoryOpen: boolean;
 }
 
-interface updateSourceConfigPayload {
-  key: keyof SourceConfig;
-  value: string | string[] | HistoryItem[];
-}
 const translateSlice = createSlice({
   name: "translate",
   initialState: {

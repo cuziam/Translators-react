@@ -76,6 +76,12 @@ interface TranslateContextType {
   webSocketRef: React.MutableRefObject<Socket | null>;
 }
 
+interface AppContextType {
+  shouldAiChatOpen: boolean;
+  updateShouldAiChatOpen: (value: boolean) => void;
+  webSocketRef: React.MutableRefObject<Socket | null>;
+}
+
 export const SourceContext = React.createContext<SourceContextType>({
   copyText: () => {},
   sendTtsRequest: () => {},
@@ -91,7 +97,13 @@ export const ResultContext = React.createContext<ResultContextType>({
 });
 
 export const TranslateContext = React.createContext<TranslateContextType>({
-  translate: async () => {},
+  translate: async () => {}, //비동기라서 다시 수정 필요
+  webSocketRef: { current: null },
+});
+
+export const AppContext = React.createContext<AppContextType>({
+  shouldAiChatOpen: false,
+  updateShouldAiChatOpen: (value: boolean) => {},
   webSocketRef: { current: null },
 });
 
@@ -99,4 +111,5 @@ export default {
   ResultContext,
   SourceContext,
   TranslateContext,
+  AppContext,
 };
