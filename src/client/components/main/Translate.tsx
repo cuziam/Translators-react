@@ -8,7 +8,7 @@ import {
 import { RootState } from "../../store/index";
 import { useSelector, useDispatch } from "react-redux";
 import { translateSliceActions } from "../../store/translate-slice";
-
+import { Routes, Route, Outlet } from "react-router-dom";
 //user-defined components
 import TranslateSource from "./TranslateSource";
 import TranslateResults from "./TranslateResults";
@@ -128,17 +128,26 @@ export default function Translate({ webSocketRef }: TranslatePropsType) {
 
   //render
   return (
-    <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto mb-52">
-      <HistoryModal historyRef={history} />
-      <TranslateContext.Provider
-        value={{
-          translate,
-          webSocketRef,
-        }}
+    <Routes>
+      <Route
+        path="/*"
+        element={
+          <div className="Translate w-96 p-2 flex-col justify-center items-center gap-2 flex m-auto mb-52">
+            <TranslateContext.Provider
+              value={{
+                translate,
+                webSocketRef,
+              }}
+            >
+              <TranslateSource />
+              <TranslateResults />
+              <Outlet />
+            </TranslateContext.Provider>
+          </div>
+        }
       >
-        <TranslateSource />
-        <TranslateResults />
-      </TranslateContext.Provider>
-    </div>
+        <Route path="history" element={<HistoryModal historyRef={history} />} />
+      </Route>
+    </Routes>
   );
 }

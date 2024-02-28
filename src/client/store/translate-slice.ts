@@ -84,7 +84,6 @@ interface translateState {
   sourceConfig: SourceConfig;
   resultsConfig: ResultsConfig;
   shouldTranslate: boolean;
-  shouldHistoryOpen: boolean;
 }
 
 const translateSlice = createSlice({
@@ -93,7 +92,6 @@ const translateSlice = createSlice({
     sourceConfig: getInitialConfigs().initialSourceConfig,
     resultsConfig: getInitialConfigs().initialResultsConfig,
     shouldTranslate: false,
-    shouldHistoryOpen: false,
   } as translateState,
   reducers: {
     updateSourceConfig: (state, action) => {
@@ -106,9 +104,6 @@ const translateSlice = createSlice({
     },
     updateShouldTranslate: (state, action) => {
       state.shouldTranslate = action.payload;
-    },
-    updateShouldHistoryOpen: (state, action) => {
-      state.shouldHistoryOpen = action.payload;
     },
   },
 });

@@ -1,23 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { io, Socket } from "socket.io-client";
-import { Dispatch } from "@reduxjs/toolkit";
 
 interface AppState {
-  shouldAiChatOpen: boolean;
   isConnected: boolean;
 }
 
 const appSlice = createSlice({
   name: "app",
   initialState: {
-    shouldAiChatOpen: false,
     isConnected: false,
-    webSocket: null,
   } as AppState,
   reducers: {
-    updateShouldAiChatOpen: (state, action) => {
-      state.shouldAiChatOpen = action.payload;
-    },
     updateIsConnected: (state, action) => {
       state.isConnected = action.payload;
     },

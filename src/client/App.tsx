@@ -4,6 +4,7 @@ import { io, Socket } from "socket.io-client";
 import Header from "./components/head/Header";
 import Translate from "./components/main/Translate";
 import AiChat from "./components/main/ai/AiChat";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 
 function App() {
   const appUrl: string = import.meta.env.VITE_APP_URL;
@@ -34,11 +35,27 @@ function App() {
 
   return (
     <>
-      <div>
-        <Header />
-        <Translate webSocketRef={webSocketRef} />
-        <AiChat webSocketRef={webSocketRef} />
-      </div>
+      <BrowserRouter>
+        <div>
+          <Routes>
+            <Route
+              path="/*"
+              element={
+                <>
+                  <Header />
+                  <Translate webSocketRef={webSocketRef} />
+                  <Outlet />
+                </>
+              }
+            >
+              <Route
+                path="aichat"
+                element={<AiChat webSocketRef={webSocketRef} />}
+              />
+            </Route>
+          </Routes>
+        </div>
+      </BrowserRouter>
     </>
   );
 }
