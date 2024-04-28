@@ -19,10 +19,11 @@ export default function SourceBar() {
         optionsName="sourceLang"
         options={supportedLangs}
         initialOption={sourceLang}
-        updateConfig={(value: string) =>
+        updateConfig={(key: string, value: string) =>
           dispatch(
             translateSliceActions.updateSourceConfig({
-              sourceLang: value,
+              key,
+              value,
             })
           )
         }

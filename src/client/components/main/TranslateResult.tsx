@@ -1,4 +1,4 @@
-import { useContext, useCallback, useRef } from "react";
+import { useContext, useCallback, useRef, useEffect, useState } from "react";
 import axios from "axios";
 //redux
 import { useDispatch, useSelector } from "react-redux";
@@ -99,7 +99,6 @@ function TranslateResult({ index }: TranslateResultPropsType) {
   const updateResultConfig = (key: string, value: any) => {
     updateResultsConfig(index, key, value);
   };
-
   //render
   return (
     <ResultContext.Provider
