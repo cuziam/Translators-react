@@ -6,6 +6,17 @@
 
 이 프로젝트는 여러 번역기를 한 번에 사용하고, 여러 언어로 동시에 번역할 수 있는 기능을 제공하는 웹 애플리케이션입니다. 사용자가 손쉽고 빠르게 원하는 언어로 문서를 번역할 수 있도록 설계되었습니다. 이 프로젝트는 제가 웹 프로그래밍을 배우고 처음 만든 앱이자, 지금도 호스팅하고 있는 가장 애착이 가는 앱입니다.
 
+### *중요: 2024/10/21부터 AWS를 활용한 서버리스 아키텍쳐로 전환을 시작합니다.  
+파일구조, 코드, 형상관리 방식 등이 대폭 변경될 예정입니다.
+
+### <아키텍쳐 계획>  
+frontend: cloudfront + S3 / React  
+backend: API gateway + lambda  
+DB: DynamoDB  
+User 관리: Cognito(user pool) + JWT  
+형상관리: Github, Github actions  
+
+
 ## 데모
 
 - [Live 링크](https://www.translators24.com)
