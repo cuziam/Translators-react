@@ -27,12 +27,12 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
 
-import { sessionMiddleware as sessionHandler } from "./src/server/sessionhandler.js";
-import { errorController as errorHandler } from "./src/server/errorhandler.js";
-import { handleClientMessage } from "./src/server/clientMessageHandler.js";
-import { handleTtsRequest } from "./src/server/ttsRequetHandler.js";
-import { handleTranslate } from "./src/server/translateHandler.js";
-import { handleTranscript } from "./src/server/transcriptionHandler.js";
+import { sessionMiddleware as sessionHandler } from "./sessionhandler.js";
+import { errorController as errorHandler } from "./errorhandler.js";
+import { handleClientMessage } from "./clientMessageHandler.js";
+import { handleTtsRequest } from "./ttsRequetHandler.js";
+import { handleTranslate } from "./translateHandler.js";
+import { handleTranscript } from "./transcriptionHandler.js";
 //PORT
 const PORT = process.env.PORT;
 

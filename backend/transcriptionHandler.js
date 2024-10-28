@@ -16,7 +16,7 @@ const handleTranscript = async (socket) => {
       return;
     }
     const fileName = `${randomUUID()}.mp3`;
-    const filePath = path.resolve(`./src/server/voices/${fileName}`);
+    const filePath = path.resolve(`./voices/${fileName}`);
     fs.writeFileSync(filePath, Buffer.from(audioArrayBuffer));
 
     const transcription = await openai.audio.transcriptions.create({

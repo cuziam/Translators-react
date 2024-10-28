@@ -19,7 +19,7 @@ function Toggle() {
         <span
           className={`${
             isPower ? "translate-x-5" : "translate-x-1"
-          } inline-block h-3 w-3 transform rounded-full bg-white transition`}
+          } inline-block h-3 w-3 transform rounded-full bg-white transition ease-in-out duration-700`}
         />
       </Switch>
     </div>

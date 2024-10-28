@@ -10,7 +10,7 @@ export function TranslateResults() {
     (state: RootState) => state.translate.resultsConfig
   );
   return (
-    <div className="Translateresults w-80 flex-col justify-center items-center gap-2 inline-flex">
+    <div className="Translateresults w-80 flex-col justify-center items-center gap-2 inline-flex transition-all">
       {resultsConfig.map((_, index: number) => (
         <TranslateResult key={index} index={index} />
       ))}

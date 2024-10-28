@@ -27,7 +27,7 @@ async function handleTtsRequest(socket) {
 
       const buffer = Buffer.from(await aac.arrayBuffer());
       const fileName = `speech-${randomUUID()}.aac`; //고유한 파일명 생성
-      const speechFilePath = path.resolve(`./src/server/voices/${fileName}`);
+      const speechFilePath = path.resolve(`./voices/${fileName}`);
       await fs.promises.writeFile(speechFilePath, buffer); //파일 저장
       console.log("TTS 파일을 생성하였습니다.");
       //클라이언트에게 파일 URL 전송
