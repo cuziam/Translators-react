@@ -102,10 +102,13 @@ const translatePapago = async function (
 
 //구글 번역 api
 import { TranslationServiceClient } from "@google-cloud/translate";
-const translationClient = new TranslationServiceClient();
-
 const projectId = process.env.GOOGLE_PROJECT_ID;
 const location = process.env.GOOGLE_LOCATION;
+const keyFileName = process.env.GOOGLE_KEY_FILENAME;
+const translationClient = new TranslationServiceClient({
+  keyFilename: keyFileName,
+});
+
 const translateGoogle = async function (
   index,
   srcText,
