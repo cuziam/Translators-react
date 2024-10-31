@@ -76,7 +76,7 @@ app.get("/", (req, res) => {
 
 app.get("/voices/:fileName", async (req, res) => {
   const { fileName } = req.params;
-  const filePath = path.resolve(`./src/server/voices/${fileName}`);
+  const filePath = path.resolve(`./voices/${fileName}`);
 
   //악의적인 파일 경로나 유효하지 않은 파일명을 요청한 경우 400 에러를 전송합니다.
   if (
